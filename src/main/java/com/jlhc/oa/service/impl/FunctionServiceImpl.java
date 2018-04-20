@@ -403,29 +403,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         return resultNum;
     }
 
-    /**
-     * 开机自动校验function默认数据
-     *
-     * @return
-     * @throws ApplicationStartupVaildException
-     */
-    @Override
-    public Boolean hasDefFuncAndRelationData(){
-        Function function = functionMapper.selectByPrimaryKey(16);
-        //如果功能不存在,返回false
-        if (null == function
-                ||5 != function.getModuleId()
-                ||!"系统管理员功能".equalsIgnoreCase(function.getFuncName())){
-            return false;
-        }
-        FuncRoleRelation funcRoleRelation = funcRoleRelationMapper.selectByPrimaryKey(90);
-        if (null == funcRoleRelation
-                ||16 != funcRoleRelation.getFuncId()
-                ||2 != funcRoleRelation.getRoleId()){
-            return false;
-        }
-        return true;
-    }
+
 
 
     /**

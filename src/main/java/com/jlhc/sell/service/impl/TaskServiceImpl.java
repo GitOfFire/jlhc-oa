@@ -23,11 +23,15 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
+/**
+ * 任务操作业务层
+ *
+ * @author renzhong
+ * @version 1.0,2018-4-20 16:03
+ */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class TaskServiceImpl implements TaskService {
@@ -380,6 +384,7 @@ public class TaskServiceImpl implements TaskService {
                 throw new NullEntityInDatabaseException();
             }
             task.setHoldUserId(taskForUpdateHoldUser.getHoldUserId());
+            task.setTaskState(1);//正常流转中
             resultNum += taskMapper.updateByPrimaryKeySelective(task);
             Flow flow = new Flow();
             flow.setTaskId(task.getTaskId());
@@ -499,7 +504,8 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> queryTasksInTaskSea() {
         taskExample.clear();
         taskExample.createCriteria()
-                .andTaskStateEqualTo(0);//0,未领取的任务
+                .andTaskStateEqualTo(0)
+                /*.andHoldUserIdEqualTo(null)*/;//0,未领取的任务,负责人为null
         List<Task> tasks = taskMapper.selectByExample(taskExample);
         return tasks;
     }

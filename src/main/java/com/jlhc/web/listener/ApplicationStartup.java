@@ -25,8 +25,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         RoleService roleService = applicationContext.getAutowireCapableBeanFactory().getBean(RoleService.class);
         FunctionService functionService = applicationContext.getAutowireCapableBeanFactory().getBean(FunctionService.class);
         Boolean hasDefRoleData = roleService.hasDefRoleData();
-        Boolean hasDefFuncRoleRelation = functionService.hasDefFuncAndRelationData();
-        if (!hasDefRoleData||!hasDefFuncRoleRelation){
+        if (!hasDefRoleData){
             try {
                 throw  new ApplicationStartupVaildException();
             } catch (ApplicationStartupVaildException e) {

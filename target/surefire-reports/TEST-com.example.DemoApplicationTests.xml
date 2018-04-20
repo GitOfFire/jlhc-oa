@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.DemoApplicationTests" time="0.231" tests="1" errors="0" skipped="0" failures="0">
+<testsuite name="com.example.DemoApplicationTests" time="0.033" tests="1" errors="0" skipped="0" failures="0">
   <properties>
-    <property name="idea.version" value="2018.1.1"/>
+    <property name="idea.version" value="2018.1.2"/>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="E:\develop\jdk\jdk_1.8.144\jre\bin"/>
     <property name="java.vm.version" value="25.144-b01"/>
@@ -45,7 +45,7 @@
     <property name="java.vm.specification.version" value="1.8"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.home" value="E:\develop\jdk\jdk_1.8.144\jre"/>
-    <property name="sun.java.command" value="org.codehaus.classworlds.Launcher -Didea.version=2018.1.1 -s E:\data\mvn_repository\settings.xml -Dmaven.repo.local=E:\data\mvn_repository\repository package -f pom.xml"/>
+    <property name="sun.java.command" value="org.codehaus.classworlds.Launcher -Didea.version=2018.1.2 -s E:\data\mvn_repository\settings.xml -Dmaven.repo.local=E:\data\mvn_repository\repository package -f pom.xml"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="zh"/>
     <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
@@ -62,5 +62,5 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase name="contextLoads" classname="com.example.DemoApplicationTests" time="0.231"/>
+  <testcase name="contextLoads" classname="com.example.DemoApplicationTests" time="0.033"/>
 </testsuite>

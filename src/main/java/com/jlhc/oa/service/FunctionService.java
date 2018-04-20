@@ -30,5 +30,5 @@ public interface FunctionService {
 
     Integer dropRoleFuncRelations(Integer roleId, List<Integer> dropedFuncIds);
 
-     Boolean hasDefFuncAndRelationData();
+
 }
