@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jlhc.oa.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.jlhc.oa.dto.user.User" >
+    <id column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="user_username" property="userUsername" jdbcType="VARCHAR" />
+    <result column="user_passwd" property="userPasswd" jdbcType="VARCHAR" />
+    <result column="user_email" property="userEmail" jdbcType="VARCHAR" />
+    <result column="user_truename" property="userTruename" jdbcType="VARCHAR" />
+    <result column="user_mobile" property="userMobile" jdbcType="VARCHAR" />
+    <result column="user_state" property="userState" jdbcType="INTEGER" />
+    <result column="user_pronounce" property="userPronounce" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    user_id, user_username, user_passwd, user_email, user_truename, user_mobile, user_state, 
+    user_pronounce
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jlhc.oa.dto.user.example.UserExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jl_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null" >
+      <if test="offset != null" >
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null" >
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from jl_user
+    where user_id = #{userId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from jl_user
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jlhc.oa.dto.user.example.UserExample" >
+    delete from jl_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jlhc.oa.dto.user.User" useGeneratedKeys="true" keyProperty="id" >
+    insert into jl_user (user_id, user_username, user_passwd, 
+      user_email, user_truename, user_mobile, 
+      user_state, user_pronounce)
+    values (#{userId,jdbcType=INTEGER}, #{userUsername,jdbcType=VARCHAR}, #{userPasswd,jdbcType=VARCHAR}, 
+      #{userEmail,jdbcType=VARCHAR}, #{userTruename,jdbcType=VARCHAR}, #{userMobile,jdbcType=VARCHAR}, 
+      #{userState,jdbcType=INTEGER}, #{userPronounce,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jlhc.oa.dto.user.User" useGeneratedKeys="true" keyProperty="id" >
+    insert into jl_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userUsername != null" >
+        user_username,
+      </if>
+      <if test="userPasswd != null" >
+        user_passwd,
+      </if>
+      <if test="userEmail != null" >
+        user_email,
+      </if>
+      <if test="userTruename != null" >
+        user_truename,
+      </if>
+      <if test="userMobile != null" >
+        user_mobile,
+      </if>
+      <if test="userState != null" >
+        user_state,
+      </if>
+      <if test="userPronounce != null" >
+        user_pronounce,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="userUsername != null" >
+        #{userUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="userPasswd != null" >
+        #{userPasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="userEmail != null" >
+        #{userEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="userTruename != null" >
+        #{userTruename,jdbcType=VARCHAR},
+      </if>
+      <if test="userMobile != null" >
+        #{userMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="userState != null" >
+        #{userState,jdbcType=INTEGER},
+      </if>
+      <if test="userPronounce != null" >
+        #{userPronounce,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jlhc.oa.dto.user.example.UserExample" resultType="java.lang.Integer" >
+    select count(*) from jl_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jl_user
+    <set >
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userUsername != null" >
+        user_username = #{record.userUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userPasswd != null" >
+        user_passwd = #{record.userPasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userEmail != null" >
+        user_email = #{record.userEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userTruename != null" >
+        user_truename = #{record.userTruename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userMobile != null" >
+        user_mobile = #{record.userMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userState != null" >
+        user_state = #{record.userState,jdbcType=INTEGER},
+      </if>
+      <if test="record.userPronounce != null" >
+        user_pronounce = #{record.userPronounce,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jl_user
+    set user_id = #{record.userId,jdbcType=INTEGER},
+      user_username = #{record.userUsername,jdbcType=VARCHAR},
+      user_passwd = #{record.userPasswd,jdbcType=VARCHAR},
+      user_email = #{record.userEmail,jdbcType=VARCHAR},
+      user_truename = #{record.userTruename,jdbcType=VARCHAR},
+      user_mobile = #{record.userMobile,jdbcType=VARCHAR},
+      user_state = #{record.userState,jdbcType=INTEGER},
+      user_pronounce = #{record.userPronounce,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jlhc.oa.dto.user.User" >
+    update jl_user
+    <set >
+      <if test="userUsername != null" >
+        user_username = #{userUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="userPasswd != null" >
+        user_passwd = #{userPasswd,jdbcType=VARCHAR},
+      </if>
+      <if test="userEmail != null" >
+        user_email = #{userEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="userTruename != null" >
+        user_truename = #{userTruename,jdbcType=VARCHAR},
+      </if>
+      <if test="userMobile != null" >
+        user_mobile = #{userMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="userState != null" >
+        user_state = #{userState,jdbcType=INTEGER},
+      </if>
+      <if test="userPronounce != null" >
+        user_pronounce = #{userPronounce,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jlhc.oa.dto.user.User" >
+    update jl_user
+    set user_username = #{userUsername,jdbcType=VARCHAR},
+      user_passwd = #{userPasswd,jdbcType=VARCHAR},
+      user_email = #{userEmail,jdbcType=VARCHAR},
+      user_truename = #{userTruename,jdbcType=VARCHAR},
+      user_mobile = #{userMobile,jdbcType=VARCHAR},
+      user_state = #{userState,jdbcType=INTEGER},
+      user_pronounce = #{userPronounce,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+<!--以下为自定义查询-->
+  <!--用户权限封装-->
+  <resultMap type="com.jlhc.oa.dto.user.User" id="userMap">
+    <id column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="user_username" property="userUsername" jdbcType="VARCHAR" />
+    <result column="user_passwd" property="userPasswd" jdbcType="VARCHAR" />
+    <result column="user_email" property="userEmail" jdbcType="VARCHAR" />
+    <result column="user_truename" property="userTruename" jdbcType="VARCHAR" />
+    <result column="user_mobile" property="userMobile" jdbcType="VARCHAR" />
+    <result column="user_state" property="userState" jdbcType="INTEGER" />
+    <result column="user_pronounce" property="userPronounce" jdbcType="VARCHAR" />
+    <collection property="roles" ofType="com.jlhc.oa.dto.role.Role">
+      <id column="role_id" property="roleId" jdbcType="INTEGER" />
+      <result column="role_group_id" property="roleGroupId" jdbcType="INTEGER" />
+      <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+      <result column="role_createdtime" property="roleCreatedtime" jdbcType="TIMESTAMP" />
+      <result column="role_description" property="roleDescription" jdbcType="VARCHAR" />
+      <result column="role_datarange" property="roleDatarange" jdbcType="INTEGER" />
+      <collection property="rights" ofType="com.jlhc.oa.dto.role.Right">
+        <id column="right_id" jdbcType="INTEGER" property="rightId" />
+        <result column="right_group_id" jdbcType="VARCHAR" property="rightGroupId" />
+        <result column="right_name" jdbcType="VARCHAR" property="rightName" />
+        <result column="right_data" jdbcType="VARCHAR" property="rightData" />
+        <result column="right_description" jdbcType="VARCHAR" property="rightDescription" />
+        <result column="right_identity" jdbcType="VARCHAR" property="rightIdentity" />
+      </collection>
+    </collection>
+  </resultMap>
+  <select id="findByUserName" parameterType="String" resultMap="userMap">
+    SELECT u.*,role.*,rig.* FROM jl_user u
+      inner join jl_role_user ru on ru.user_id=u.user_id
+      inner join jl_role role on role.role_id=ru.role_id
+      inner join jl_role_right rr on rr.role_id=role.role_id
+      inner join jl_right rig on rr.right_id=rig.right_id
+    WHERE u.user_username=#{userName};
+  </select>
+  <!--专门给系统管理员赋值-->
+  <select id="getUserWithAllRolesAndRights" resultMap="userMap">
+    SELECT
+      u.user_id,
+      u.user_username,
+      u.user_passwd,
+      u.user_truename,
+      u.user_mobile,
+      u.user_email,
+      u.user_pronounce,
+      u.user_state,
+      rol.role_id,
+      rol.role_group_id,
+      rol.role_name,
+      rol.role_description,
+      rol.role_datarange,
+      rol.role_createdtime,
+      rig.right_id,
+      rig.right_name,
+      rig.right_group_identity,
+      rig.right_identity,
+      rig.right_data,
+      rig.right_description
+    FROM
+      jl_user u,
+      jl_role rol,
+      jl_right rig
+    WHERE
+      u.user_username = "admin"
+      AND
+      rol.role_name = "SuperManager";
+  </select>
+  <!--根据组织id查询所属用户-->
+  <select id="selectByOrg" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT
+    u.*,uo.*
+    FROM
+      jl_user_org uo
+    LEFT JOIN
+      jl_user u
+    ON
+      uo.user_id = u.user_id
+    WHERE
+      uo.org_id = #{orgId,jdbcType=INTEGER};
+
+  </select>
+  <!--修改一位用户的组织关系-->
+  <update id="leaveOrg">
+    UPDATE
+      jl_user_org uo
+    SET
+      uo.org_id = #{orgId}
+    WHERE
+      uo.user_id = #{userId}
+  </update>
+</mapper>

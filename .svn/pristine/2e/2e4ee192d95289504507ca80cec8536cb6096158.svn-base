@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="jlhc_oa:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="jlhc_oa.war">
+      <element id="artifact" artifact-name="jlhc_oa:war exploded" />
+    </root>
+  </artifact>
+</component>

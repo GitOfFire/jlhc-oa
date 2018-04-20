@@ -1,0 +1,66 @@
+package com.jlhc.oa.dto.user;
+
+import com.jlhc.oa.dto.Organization;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * @author renzhong
+ * @version 1.0
+ * @Description
+ * @Date: Created in 15:50 2018/1/4 0004
+ */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+public class User implements Serializable {
+    @Max(value = 999999999)
+    private Integer userId;
+    @NotEmpty(message = "姓名不能为空")
+    private String userUsername;
+    @NotEmpty(message = "密码不能为空")
+    @Length(min = 6, message = "密码不能小于6位")
+    private String userPasswd;
+    @Email(message = "请输入正确的邮箱")
+    private String userEmail;
+    @NotEmpty(message = "真实姓名不能为空")
+    private String userTruename;
+    @Pattern(regexp = "^1[0-9]{10}$", message = "请输入正确的手机号")
+    private String userMobile;
+    @Max(value = 2, message = "账号没有这种状态")
+    @Min(value = 0, message = "账号没有这种状态")
+    private Integer userState;
+    @Length(max = 64, message = "真实姓名长度小于64")
+    private String userPronounce;
+
+    private String loginTime;
+
+    //!!!!目前缺少数据范围,可以在这里设置
+    private List<String> promissions;
+    /**
+     * 用户角色集合
+     */
+    private Set<com.jlhc.oa.dto.Role> roles = new HashSet<>();
+
+    /**
+     * 用户对应的组织机构集合
+     */
+    private Set<Organization> organizations = new HashSet<>();//用户与组织机构多对多,从而灵活配给用户的数据范围
+
+    private static final long serialVersionUID = 1L;
+
+}

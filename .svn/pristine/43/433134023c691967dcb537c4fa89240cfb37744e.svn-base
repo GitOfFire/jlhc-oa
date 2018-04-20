@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jlhc.base_com.dao.CompanyMapper" >
+  <resultMap id="BaseResultMap" type="com.jlhc.base_com.dto.Company" >
+    <id column="com_id" property="comId" jdbcType="CHAR" />
+    <result column="com_unicode" property="comUnicode" jdbcType="VARCHAR" />
+    <result column="com_name" property="comName" jdbcType="VARCHAR" />
+    <result column="com_type" property="comType" jdbcType="INTEGER" />
+    <result column="com_address" property="comAddress" jdbcType="VARCHAR" />
+    <result column="cus_id" property="cusId" jdbcType="CHAR" />
+    <result column="com_capital" property="comCapital" jdbcType="BIGINT" />
+    <result column="com_found_time" property="comFoundTime" jdbcType="DATE" />
+    <result column="com_business_term" property="comBusinessTerm" jdbcType="BIGINT" />
+    <result column="com_bussiness_scope" property="comBussinessScope" jdbcType="VARCHAR" />
+    <result column="com_description" property="comDescription" jdbcType="VARCHAR" />
+    <result column="com_state_type" property="comStateType" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    com_id, com_unicode, com_name, com_type, com_address, cus_id, com_capital, com_found_time, 
+    com_business_term, com_bussiness_scope, com_description, com_state_type
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jlhc.base_com.dto.example.CompanyExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from base_company
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null" >
+      <if test="offset != null" >
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null" >
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_company
+    where com_id = #{comId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from base_company
+    where com_id = #{comId,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jlhc.base_com.dto.example.CompanyExample" >
+    delete from base_company
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jlhc.base_com.dto.Company" useGeneratedKeys="true" keyProperty="id" >
+    insert into base_company (com_id, com_unicode, com_name, 
+      com_type, com_address, cus_id, 
+      com_capital, com_found_time, com_business_term, 
+      com_bussiness_scope, com_description, com_state_type
+      )
+    values (#{comId,jdbcType=CHAR}, #{comUnicode,jdbcType=VARCHAR}, #{comName,jdbcType=VARCHAR}, 
+      #{comType,jdbcType=INTEGER}, #{comAddress,jdbcType=VARCHAR}, #{cusId,jdbcType=CHAR}, 
+      #{comCapital,jdbcType=BIGINT}, #{comFoundTime,jdbcType=DATE}, #{comBusinessTerm,jdbcType=BIGINT}, 
+      #{comBussinessScope,jdbcType=VARCHAR}, #{comDescription,jdbcType=VARCHAR}, #{comStateType,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jlhc.base_com.dto.Company" useGeneratedKeys="true" keyProperty="id" >
+    insert into base_company
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="comId != null" >
+        com_id,
+      </if>
+      <if test="comUnicode != null" >
+        com_unicode,
+      </if>
+      <if test="comName != null" >
+        com_name,
+      </if>
+      <if test="comType != null" >
+        com_type,
+      </if>
+      <if test="comAddress != null" >
+        com_address,
+      </if>
+      <if test="cusId != null" >
+        cus_id,
+      </if>
+      <if test="comCapital != null" >
+        com_capital,
+      </if>
+      <if test="comFoundTime != null" >
+        com_found_time,
+      </if>
+      <if test="comBusinessTerm != null" >
+        com_business_term,
+      </if>
+      <if test="comBussinessScope != null" >
+        com_bussiness_scope,
+      </if>
+      <if test="comDescription != null" >
+        com_description,
+      </if>
+      <if test="comStateType != null" >
+        com_state_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="comId != null" >
+        #{comId,jdbcType=CHAR},
+      </if>
+      <if test="comUnicode != null" >
+        #{comUnicode,jdbcType=VARCHAR},
+      </if>
+      <if test="comName != null" >
+        #{comName,jdbcType=VARCHAR},
+      </if>
+      <if test="comType != null" >
+        #{comType,jdbcType=INTEGER},
+      </if>
+      <if test="comAddress != null" >
+        #{comAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="cusId != null" >
+        #{cusId,jdbcType=CHAR},
+      </if>
+      <if test="comCapital != null" >
+        #{comCapital,jdbcType=BIGINT},
+      </if>
+      <if test="comFoundTime != null" >
+        #{comFoundTime,jdbcType=DATE},
+      </if>
+      <if test="comBusinessTerm != null" >
+        #{comBusinessTerm,jdbcType=BIGINT},
+      </if>
+      <if test="comBussinessScope != null" >
+        #{comBussinessScope,jdbcType=VARCHAR},
+      </if>
+      <if test="comDescription != null" >
+        #{comDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="comStateType != null" >
+        #{comStateType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jlhc.base_com.dto.example.CompanyExample" resultType="java.lang.Integer" >
+    select count(*) from base_company
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update base_company
+    <set >
+      <if test="record.comId != null" >
+        com_id = #{record.comId,jdbcType=CHAR},
+      </if>
+      <if test="record.comUnicode != null" >
+        com_unicode = #{record.comUnicode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comName != null" >
+        com_name = #{record.comName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comType != null" >
+        com_type = #{record.comType,jdbcType=INTEGER},
+      </if>
+      <if test="record.comAddress != null" >
+        com_address = #{record.comAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cusId != null" >
+        cus_id = #{record.cusId,jdbcType=CHAR},
+      </if>
+      <if test="record.comCapital != null" >
+        com_capital = #{record.comCapital,jdbcType=BIGINT},
+      </if>
+      <if test="record.comFoundTime != null" >
+        com_found_time = #{record.comFoundTime,jdbcType=DATE},
+      </if>
+      <if test="record.comBusinessTerm != null" >
+        com_business_term = #{record.comBusinessTerm,jdbcType=BIGINT},
+      </if>
+      <if test="record.comBussinessScope != null" >
+        com_bussiness_scope = #{record.comBussinessScope,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comDescription != null" >
+        com_description = #{record.comDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comStateType != null" >
+        com_state_type = #{record.comStateType,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update base_company
+    set com_id = #{record.comId,jdbcType=CHAR},
+      com_unicode = #{record.comUnicode,jdbcType=VARCHAR},
+      com_name = #{record.comName,jdbcType=VARCHAR},
+      com_type = #{record.comType,jdbcType=INTEGER},
+      com_address = #{record.comAddress,jdbcType=VARCHAR},
+      cus_id = #{record.cusId,jdbcType=CHAR},
+      com_capital = #{record.comCapital,jdbcType=BIGINT},
+      com_found_time = #{record.comFoundTime,jdbcType=DATE},
+      com_business_term = #{record.comBusinessTerm,jdbcType=BIGINT},
+      com_bussiness_scope = #{record.comBussinessScope,jdbcType=VARCHAR},
+      com_description = #{record.comDescription,jdbcType=VARCHAR},
+      com_state_type = #{record.comStateType,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jlhc.base_com.dto.Company" >
+    update base_company
+    <set >
+      <if test="comUnicode != null" >
+        com_unicode = #{comUnicode,jdbcType=VARCHAR},
+      </if>
+      <if test="comName != null" >
+        com_name = #{comName,jdbcType=VARCHAR},
+      </if>
+      <if test="comType != null" >
+        com_type = #{comType,jdbcType=INTEGER},
+      </if>
+      <if test="comAddress != null" >
+        com_address = #{comAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="cusId != null" >
+        cus_id = #{cusId,jdbcType=CHAR},
+      </if>
+      <if test="comCapital != null" >
+        com_capital = #{comCapital,jdbcType=BIGINT},
+      </if>
+      <if test="comFoundTime != null" >
+        com_found_time = #{comFoundTime,jdbcType=DATE},
+      </if>
+      <if test="comBusinessTerm != null" >
+        com_business_term = #{comBusinessTerm,jdbcType=BIGINT},
+      </if>
+      <if test="comBussinessScope != null" >
+        com_bussiness_scope = #{comBussinessScope,jdbcType=VARCHAR},
+      </if>
+      <if test="comDescription != null" >
+        com_description = #{comDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="comStateType != null" >
+        com_state_type = #{comStateType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where com_id = #{comId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jlhc.base_com.dto.Company" >
+    update base_company
+    set com_unicode = #{comUnicode,jdbcType=VARCHAR},
+      com_name = #{comName,jdbcType=VARCHAR},
+      com_type = #{comType,jdbcType=INTEGER},
+      com_address = #{comAddress,jdbcType=VARCHAR},
+      cus_id = #{cusId,jdbcType=CHAR},
+      com_capital = #{comCapital,jdbcType=BIGINT},
+      com_found_time = #{comFoundTime,jdbcType=DATE},
+      com_business_term = #{comBusinessTerm,jdbcType=BIGINT},
+      com_bussiness_scope = #{comBussinessScope,jdbcType=VARCHAR},
+      com_description = #{comDescription,jdbcType=VARCHAR},
+      com_state_type = #{comStateType,jdbcType=INTEGER}
+    where com_id = #{comId,jdbcType=CHAR}
+  </update>
+</mapper>

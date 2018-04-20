@@ -1,0 +1,31 @@
+package com.jlhc.oa.service;
+
+import com.jlhc.oa.dto.user.User;
+import com.jlhc.oa.dto.user.UserAndOrgId;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
+public interface UserService {
+
+    User queryUserWithRolesAndRightByName(String username);
+
+    User getAllRolesAndRights();
+
+    User getUserById(Integer userId);
+
+    Integer createUser(User user, Integer orgId) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+
+    List<User> queryUsersByOrgId(Integer orgId);
+
+    List<User> queryUsersNearUserTrueName(String userTrueName);
+
+    Integer reworkBaseUser(User user) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+
+    Integer reworkBaseUserAndOrg(UserAndOrgId userAndOrgId) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+
+    Integer dropUser(Integer userId);
+
+    List<User> queryUsersByRoleId(Integer roleId);
+}

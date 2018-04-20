@@ -1,0 +1,250 @@
+package com.jlhc.oa.web.controller;
+
+import com.jlhc.oa.common.utils.ResultUtil;
+import com.jlhc.oa.dto.Msg;
+import com.jlhc.oa.dto.user.User;
+import com.jlhc.oa.dto.user.UserAndOrgId;
+import com.jlhc.oa.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+/**
+ * @author renzhong
+ * @version 1.0
+ * @Description
+ * @Date: Created in 18:10 2018/1/4 0004
+ */
+@RequestMapping("/user")
+@RestController
+@Api( value = "用户模块", description = "这个接口集合用于用户模块界面")
+public class UserController extends BaseController{
+
+    private Logger logger =  LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private UserService userService;
+
+    /**
+     * 找到单一用户通过ID,该接口用于异步查询单一用户信息时
+     *
+     * @param userId
+     * @return 单一用户信息
+     */
+    @ApiOperation(value = "找到单一用户通过ID",notes = "用户:查询",nickname = "用户查询")
+    @RequestMapping(value = "getUserById/{userId}",method= RequestMethod.GET)
+    @RequiresPermissions("user:getUserById")
+    public Msg findUserById(@PathVariable @Max(value = 999999999)Integer userId){
+        try {
+            User user = userService.getUserById(userId);
+            if (null == user){
+                return ResultUtil.selectFailed();
+            }else {
+                return ResultUtil.selectSuccess(user);
+            }
+        }catch (Exception e){
+            logger.error("通过用户ID查询用户报错",e);
+            return ResultUtil.error(e);
+        }
+    }
+
+
+    /**
+     * 添加用户,入参有三个组,用户基本数据,用户组织id
+     *
+     * @param userAndOrgId,operationUserId
+     * @return
+     */
+    @ApiOperation(value = "添加用户",notes = "入参有三个组,用户基本数据,用户组织id",nickname = "用户添加")
+    @RequestMapping(value = "postUser",method = RequestMethod.POST)
+    @RequiresPermissions("user:postUser")
+    public Msg postUser(@RequestBody @Valid UserAndOrgId userAndOrgId, BindingResult bindingResult){
+        //logger.info(session.getAttribute("user").toString());
+        try {
+            Integer resultNum = 0;
+            Integer orgId = userAndOrgId.getOrgId();
+            if(null != orgId&&0 <= orgId) {
+                //orgId被指定
+                resultNum = userService.createUser(userAndOrgId.getUser(), orgId);
+                if (-2 == resultNum){
+                    return ResultUtil.operationFailed("重复的用户名");
+                }else if (-3 == resultNum){
+                    return ResultUtil.operationFailed("未知的组织机构");
+                }else if (0 == resultNum){
+                    return ResultUtil.operationFailed();
+                }
+
+            }else {
+                //orgId未被指定
+                return ResultUtil.operationFailed("未知的组织机构");
+            }
+            return ResultUtil.addSuccess(resultNum);
+        }catch (Exception e){
+            logger.error("添加用户失败",e);
+            return ResultUtil.error(e);
+        }
+    }
+
+    /**
+     * 根据组织机构查询用户
+     *
+     * @param orgId
+     * @return
+     */
+    @ApiOperation(value = "根据组织机构查询用户集合",notes = "用户:查询",nickname = "根据组织机构查询用户")
+    @RequestMapping(value = "getUsersByOrgId/{orgId}",method = RequestMethod.GET)
+    @RequiresPermissions("user:getUsersByOrgId")
+    public Msg getUsersByOrgId(@PathVariable @Max(999999999) Integer orgId){
+        try {
+            List<User> users = userService.queryUsersByOrgId(orgId);
+            if (0 == users.size()||null == users){
+                return ResultUtil.selectFailed();
+            }
+            return ResultUtil.selectSuccess(users);
+        }catch (Exception e){
+            logger.error("根据组织机构查询用户出错",e);
+            return ResultUtil.error(e);
+        }
+    }
+
+    /**
+     * 根据用户真名模糊查询用户
+     *
+     * @param userTrueName
+     * @return
+     */
+    @ApiOperation(value = "根据用户真名模糊查询用户",notes = "用户:查询",nickname = "根据用户真名模糊查询用户")
+    @RequestMapping(value = "getUsersNearUserTrueName",method = RequestMethod.GET)
+    @RequiresPermissions("user:getUsersNearUserTrueName")
+    public Msg getUsersNearUserTrueName(@RequestParam @NotNull String userTrueName){
+        //logger.info(userTrueName);
+        try {
+            List<User> users = userService.queryUsersNearUserTrueName(userTrueName);
+            if (0 == users.size()||null == users){
+                return ResultUtil.selectFailed();
+            }
+            return ResultUtil.selectSuccess(users);
+
+        }catch (Exception e){
+            logger.error("根据用户真名模糊查询用户出错",e);
+            return ResultUtil.error(e);
+        }
+    }
+//备选添加根据真实姓名模糊查询所有用户
+//    public Msg getAllUsersNearUserTrueName(@RequestParam @NotNull String userTrueName){
+//        try {
+//            List<User> users = userService.queryAllUsersNearUserTrueName(userTrueName);
+//            if (0 == users.size()||null == users){
+//                return ResultUtil.selectFailed();
+//            }
+//            return ResultUtil.selectSuccess(users);
+//
+//        }catch (Exception e){
+//            logger.error("根据用户真名模糊查询用户出错",e);
+//            return ResultUtil.error(e);
+//        }
+//    }
+
+    /**
+     * 修改用户基础信息以及用户所属组织机构
+     *
+     * @param userAndOrgId 封装了要修改的用户信息以及用户所要变更的组织机构信息
+     * @return 返回修改结果
+     */
+    @ApiOperation(value = "修改用户基础信息以及用户所属组织机构",notes = "用户:修改",nickname = "修改用户基础信息以及用户所属组织机构")
+    @RequestMapping(value = "putUserAndOrg",method = RequestMethod.PUT)
+    @RequiresPermissions("user:putUserAndOrg")
+    public Msg putUserAndOrg(@RequestBody @Valid UserAndOrgId userAndOrgId,BindingResult bindingResult){
+        try {
+            Integer resultNum = userService.reworkBaseUserAndOrg(userAndOrgId);
+            if (resultNum == -2){
+                return ResultUtil.operationFailed("用户名重复");
+            }else if (resultNum == 0){
+                return ResultUtil.operationFailed();
+            }else if (resultNum == -3){
+                return ResultUtil.operationFailed("未知的组织机构");
+            }
+            return ResultUtil.updateSuccess(resultNum);
+        }catch (Exception e){
+            logger.error("修改用户基础信息以及用户所属组织机构出现错误",e);
+            return ResultUtil.error(e);
+        }
+
+    }
+
+    /**
+     * 修改用户基本信息
+     *
+     * @param user
+     * @return
+     */
+    @ApiOperation(value = "修改用户基本信息",notes = "用户:修改",nickname = "修改用户基本信息接口")
+    @RequestMapping(value = "putBaseUser",method = RequestMethod.PUT)
+    @RequiresPermissions("user:putBaseUser")
+    public Msg putBaseUser(@RequestBody @Valid User user,BindingResult BindingResult){
+        try{
+            Integer resultNum = userService.reworkBaseUser(user);
+            if (resultNum == -2){
+                return ResultUtil.operationFailed("用户名重复");
+            }else if (resultNum == 0){
+                return ResultUtil.operationFailed();
+            }
+            return ResultUtil.updateSuccess(resultNum);
+        }catch (Exception e){
+            logger.error("修改用户基本信息和用户组织机构信息",e);
+            return ResultUtil.error(e);
+        }
+    }
+
+    /**
+     * 员工离职
+     *
+     * @param userId 离职员工的Id
+     * @return
+     */
+    @ApiOperation(value = "员工离职")
+    @RequestMapping(value = "deleteUser/{userId}",method = RequestMethod.DELETE)
+    @RequiresPermissions("user:deleteUser")
+    public Msg dimissionUser(@PathVariable @Max(999999999) Integer userId){
+        try {
+            Integer resultNum = userService.dropUser(userId);
+            if (resultNum == -3){
+                return ResultUtil.operationFailed("该用户不存在");
+            }
+            return ResultUtil.deleteSuccess(resultNum);
+        }catch (Exception e){
+            logger.error("员工离职接口出错",e);
+            return ResultUtil.error(e);
+        }
+    }
+
+    /**
+     * 根据角色查询用户
+     *
+     * @param roleId 角色Id
+     * @return
+     */
+    @RequestMapping(value = "getUsersByRoleId/{roleId}",method = RequestMethod.GET)
+    @RequiresPermissions("user:getUsersByRoleId")
+    public Msg getUsersByRoleId(@PathVariable @Max(999999999) @NotNull Integer roleId){
+        try{
+            List<User> users = userService.queryUsersByRoleId(roleId);
+            if (0 < users.size()|| null != users){
+                return ResultUtil.selectSuccess(users);
+            }
+            return ResultUtil.selectFailed();
+        }catch(Exception e){
+            logger.error("根据角色查询用户",e);
+            return ResultUtil.error(e);
+        }
+    }
+}

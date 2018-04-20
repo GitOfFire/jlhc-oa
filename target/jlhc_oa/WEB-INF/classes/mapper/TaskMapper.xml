@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jlhc.sell.dao.TaskMapper" >
+  <resultMap id="BaseResultMap" type="com.jlhc.sell.dto.Task" >
+    <id column="task_id" property="taskId" jdbcType="CHAR" />
+    <result column="com_id" property="comId" jdbcType="CHAR" />
+    <result column="task_content" property="taskContent" jdbcType="VARCHAR" />
+    <result column="task_created_user" property="taskCreatedUser" jdbcType="INTEGER" />
+    <result column="task_created_time" property="taskCreatedTime" jdbcType="DATE" />
+    <result column="hold_user_id" property="holdUserId" jdbcType="INTEGER" />
+    <result column="task_state" property="taskState" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    task_id, com_id, task_content, task_created_user, task_created_time, hold_user_id, 
+    task_state
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jlhc.sell.dto.example.TaskExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from sell_task
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null" >
+      <if test="offset != null" >
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null" >
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from sell_task
+    where task_id = #{taskId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from sell_task
+    where task_id = #{taskId,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jlhc.sell.dto.example.TaskExample" >
+    delete from sell_task
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jlhc.sell.dto.Task" useGeneratedKeys="true" keyProperty="id" >
+    insert into sell_task (task_id, com_id, task_content, 
+      task_created_user, task_created_time, hold_user_id, 
+      task_state)
+    values (#{taskId,jdbcType=CHAR}, #{comId,jdbcType=CHAR}, #{taskContent,jdbcType=VARCHAR}, 
+      #{taskCreatedUser,jdbcType=INTEGER}, #{taskCreatedTime,jdbcType=DATE}, #{holdUserId,jdbcType=INTEGER}, 
+      #{taskState,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jlhc.sell.dto.Task" useGeneratedKeys="true" keyProperty="id" >
+    insert into sell_task
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="taskId != null" >
+        task_id,
+      </if>
+      <if test="comId != null" >
+        com_id,
+      </if>
+      <if test="taskContent != null" >
+        task_content,
+      </if>
+      <if test="taskCreatedUser != null" >
+        task_created_user,
+      </if>
+      <if test="taskCreatedTime != null" >
+        task_created_time,
+      </if>
+      <if test="holdUserId != null" >
+        hold_user_id,
+      </if>
+      <if test="taskState != null" >
+        task_state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="taskId != null" >
+        #{taskId,jdbcType=CHAR},
+      </if>
+      <if test="comId != null" >
+        #{comId,jdbcType=CHAR},
+      </if>
+      <if test="taskContent != null" >
+        #{taskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="taskCreatedUser != null" >
+        #{taskCreatedUser,jdbcType=INTEGER},
+      </if>
+      <if test="taskCreatedTime != null" >
+        #{taskCreatedTime,jdbcType=DATE},
+      </if>
+      <if test="holdUserId != null" >
+        #{holdUserId,jdbcType=INTEGER},
+      </if>
+      <if test="taskState != null" >
+        #{taskState,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jlhc.sell.dto.example.TaskExample" resultType="java.lang.Integer" >
+    select count(*) from sell_task
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update sell_task
+    <set >
+      <if test="record.taskId != null" >
+        task_id = #{record.taskId,jdbcType=CHAR},
+      </if>
+      <if test="record.comId != null" >
+        com_id = #{record.comId,jdbcType=CHAR},
+      </if>
+      <if test="record.taskContent != null" >
+        task_content = #{record.taskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taskCreatedUser != null" >
+        task_created_user = #{record.taskCreatedUser,jdbcType=INTEGER},
+      </if>
+      <if test="record.taskCreatedTime != null" >
+        task_created_time = #{record.taskCreatedTime,jdbcType=DATE},
+      </if>
+      <if test="record.holdUserId != null" >
+        hold_user_id = #{record.holdUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.taskState != null" >
+        task_state = #{record.taskState,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update sell_task
+    set task_id = #{record.taskId,jdbcType=CHAR},
+      com_id = #{record.comId,jdbcType=CHAR},
+      task_content = #{record.taskContent,jdbcType=VARCHAR},
+      task_created_user = #{record.taskCreatedUser,jdbcType=INTEGER},
+      task_created_time = #{record.taskCreatedTime,jdbcType=DATE},
+      hold_user_id = #{record.holdUserId,jdbcType=INTEGER},
+      task_state = #{record.taskState,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jlhc.sell.dto.Task" >
+    update sell_task
+    <set >
+      <if test="comId != null" >
+        com_id = #{comId,jdbcType=CHAR},
+      </if>
+      <if test="taskContent != null" >
+        task_content = #{taskContent,jdbcType=VARCHAR},
+      </if>
+      <if test="taskCreatedUser != null" >
+        task_created_user = #{taskCreatedUser,jdbcType=INTEGER},
+      </if>
+      <if test="taskCreatedTime != null" >
+        task_created_time = #{taskCreatedTime,jdbcType=DATE},
+      </if>
+      <if test="holdUserId != null" >
+        hold_user_id = #{holdUserId,jdbcType=INTEGER},
+      </if>
+      <if test="taskState != null" >
+        task_state = #{taskState,jdbcType=INTEGER},
+      </if>
+    </set>
+    where task_id = #{taskId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jlhc.sell.dto.Task" >
+    update sell_task
+    set com_id = #{comId,jdbcType=CHAR},
+      task_content = #{taskContent,jdbcType=VARCHAR},
+      task_created_user = #{taskCreatedUser,jdbcType=INTEGER},
+      task_created_time = #{taskCreatedTime,jdbcType=DATE},
+      hold_user_id = #{holdUserId,jdbcType=INTEGER},
+      task_state = #{taskState,jdbcType=INTEGER}
+    where task_id = #{taskId,jdbcType=CHAR}
+  </update>
+  <!--同时插入多条数据-->
+  <insert id="insertTasks" parameterType="java.util.ArrayList">
+    insert into sell_task (task_id,task_content,task_created_time,task_created_user,task_state) VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.taskId},#{item.taskContent},#{item.taskCreatedTime},#{item.taskCreatedUser},0)
+    </foreach>
+  </insert>
+  <select id="selectSharedTaskAtUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    t.*
+    from
+    sell_task t,sell_task_user ts
+    where
+    t.task_id = ts.task_id
+    AND
+    ts.user_id = #{userId,jdbcType=INTEGER};
+  </select>
+  <!--根据taskId查询task的公司,相关联系人,工作记录,基本信息等内容-->
+  <resultMap type="com.jlhc.sell.dto.TaskFullInfo" id="taskMap">
+    <id column="task_id" property="taskId" jdbcType="CHAR" />
+    <result column="task_content" property="taskContent" jdbcType="VARCHAR" />
+    <result column="com_id" property="comId" jdbcType="CHAR" />
+    <result column="task_created_user" property="taskCreatedUser" jdbcType="INTEGER" />
+    <result column="task_created_time" property="taskCreatedTime" jdbcType="DATE" />
+    <result column="hold_user_id" property="holdUserId" jdbcType="INTEGER" />
+    <result column="task_state" property="taskState" jdbcType="INTEGER" />
+    <!--<association property="user" select="selectUserByPrimaryKey" column="user" javaType="com.jlhc.oa.dto.user.User"/>
+    <association property="company" select="selectCompanyByPrimaryKey" column="company" javaType="com.jlhc.base_com.dto.Company"/>-->
+    <result column="com_name" property="comName" jdbcType="VARCHAR"/>
+    <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+    <collection property="customers" ofType="com.jlhc.base_com.dto.Customer">
+      <id column="cus_id" property="cusId" jdbcType="CHAR" />
+      <result column="cus_name" property="cusName" jdbcType="VARCHAR" />
+      <result column="cus_gender_type" property="cusGenderType" jdbcType="INTEGER" />
+      <result column="cus_id_card" property="cusIdCard" jdbcType="CHAR" />
+      <result column="cus_remarks" property="cusRemarks" jdbcType="VARCHAR" />
+      <result column="com_id" property="comId" jdbcType="CHAR" />
+      <result column="call_main" property="callMain" jdbcType="CHAR" />
+      <result column="call_secondary" property="callSecondary" jdbcType="VARCHAR" />
+    </collection>
+    <collection property="notes" ofType="com.jlhc.sell.dto.Note">
+      <id column="note_id" property="noteId" jdbcType="CHAR" />
+      <result column="note_content" property="noteContent" jdbcType="VARCHAR" />
+      <result column="note_created_time" property="noteCreatedTime" jdbcType="DATE" />
+      <result column="task_id" property="taskId" jdbcType="CHAR" />
+      <result column="user_id" property="userId" jdbcType="INTEGER" />
+    </collection>
+  </resultMap>
+  <select id="selectTaskInfoAboutComCusNoteByPrimaryKey" parameterType="java.lang.String" resultMap="taskMap">
+    SELECT
+    *
+    FROM (select t.task_id,
+    t.com_id,
+    t.task_content,
+    t.task_created_user,
+    t.task_created_time,
+    t.hold_user_id,
+    t.task_state,
+    com.com_name ,u.user_truename as user_name
+    from sell_task t ,base_company com ,jl_user u
+    where t.task_id = #{taskId,jdbcType=CHAR}
+    and t.com_id = com.com_id
+    and t.hold_user_id = u.user_id
+
+    ) t
+    LEFT JOIN base_customer cus ON t.com_id = cus.com_id
+    LEFT JOIN sell_note n ON t.task_id = n.task_id;
+
+  </select>
+  <!--<select id="selectUserByPrimaryKey" parameterType="java.lang.Integer" resultType="com.jlhc.oa.dto.user.User">
+    SELECT
+    u.user_id,
+    u.user_truename
+    FROM
+    jl_user u
+    where
+    u.user_id = #{userId,jdbcType=INTEGER};
+  </select>
+  <select id="selectCompanyByPrimaryKey" parameterType="java.lang.String" resultType="com.jlhc.base_com.dto.Company">
+    SELECT
+    com.com_id,
+    com.com_name
+    FROM
+    base_company com
+    where
+    com.com_id = #{comId,jdbcType=VARCHAR};
+  </select>-->
+
+  <select id="selectTasksByManyComIds" parameterType="List" resultMap="BaseResultMap">
+    SELECT
+    t.com_id,
+    t.hold_user_id,
+    t.task_content,
+    t.task_created_time,
+    t.task_created_user,
+    t.task_id,
+    t.task_state
+    <!--<include refid="Base_Column_List" />-->
+    FROM
+    sell_task t
+    WHERE 1= 1
+    <if test="list != null and list.size>0">
+    and
+    t.com_id in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    </if>;
+  </select>
+</mapper>

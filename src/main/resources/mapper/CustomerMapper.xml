@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jlhc.base_com.dao.CustomerMapper" >
+  <resultMap id="BaseResultMap" type="com.jlhc.base_com.dto.Customer" >
+    <id column="cus_id" property="cusId" jdbcType="CHAR" />
+    <result column="cus_name" property="cusName" jdbcType="VARCHAR" />
+    <result column="cus_gender_type" property="cusGenderType" jdbcType="INTEGER" />
+    <result column="cus_id_card" property="cusIdCard" jdbcType="CHAR" />
+    <result column="cus_remarks" property="cusRemarks" jdbcType="VARCHAR" />
+    <result column="com_id" property="comId" jdbcType="CHAR" />
+    <result column="call_main" property="callMain" jdbcType="CHAR" />
+    <result column="call_secondary" property="callSecondary" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    cus_id, cus_name, cus_gender_type, cus_id_card, cus_remarks, com_id, call_main, call_secondary
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jlhc.base_com.dto.example.CustomerExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from base_customer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null" >
+      <if test="offset != null" >
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null" >
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from base_customer
+    where cus_id = #{cusId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from base_customer
+    where cus_id = #{cusId,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jlhc.base_com.dto.example.CustomerExample" >
+    delete from base_customer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jlhc.base_com.dto.Customer" useGeneratedKeys="true" keyProperty="id" >
+    insert into base_customer (cus_id, cus_name, cus_gender_type, 
+      cus_id_card, cus_remarks, com_id, 
+      call_main, call_secondary)
+    values (#{cusId,jdbcType=CHAR}, #{cusName,jdbcType=VARCHAR}, #{cusGenderType,jdbcType=INTEGER}, 
+      #{cusIdCard,jdbcType=CHAR}, #{cusRemarks,jdbcType=VARCHAR}, #{comId,jdbcType=CHAR}, 
+      #{callMain,jdbcType=CHAR}, #{callSecondary,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jlhc.base_com.dto.Customer" useGeneratedKeys="true" keyProperty="id" >
+    insert into base_customer
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cusId != null" >
+        cus_id,
+      </if>
+      <if test="cusName != null" >
+        cus_name,
+      </if>
+      <if test="cusGenderType != null" >
+        cus_gender_type,
+      </if>
+      <if test="cusIdCard != null" >
+        cus_id_card,
+      </if>
+      <if test="cusRemarks != null" >
+        cus_remarks,
+      </if>
+      <if test="comId != null" >
+        com_id,
+      </if>
+      <if test="callMain != null" >
+        call_main,
+      </if>
+      <if test="callSecondary != null" >
+        call_secondary,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cusId != null" >
+        #{cusId,jdbcType=CHAR},
+      </if>
+      <if test="cusName != null" >
+        #{cusName,jdbcType=VARCHAR},
+      </if>
+      <if test="cusGenderType != null" >
+        #{cusGenderType,jdbcType=INTEGER},
+      </if>
+      <if test="cusIdCard != null" >
+        #{cusIdCard,jdbcType=CHAR},
+      </if>
+      <if test="cusRemarks != null" >
+        #{cusRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="comId != null" >
+        #{comId,jdbcType=CHAR},
+      </if>
+      <if test="callMain != null" >
+        #{callMain,jdbcType=CHAR},
+      </if>
+      <if test="callSecondary != null" >
+        #{callSecondary,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jlhc.base_com.dto.example.CustomerExample" resultType="java.lang.Integer" >
+    select count(*) from base_customer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update base_customer
+    <set >
+      <if test="record.cusId != null" >
+        cus_id = #{record.cusId,jdbcType=CHAR},
+      </if>
+      <if test="record.cusName != null" >
+        cus_name = #{record.cusName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cusGenderType != null" >
+        cus_gender_type = #{record.cusGenderType,jdbcType=INTEGER},
+      </if>
+      <if test="record.cusIdCard != null" >
+        cus_id_card = #{record.cusIdCard,jdbcType=CHAR},
+      </if>
+      <if test="record.cusRemarks != null" >
+        cus_remarks = #{record.cusRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comId != null" >
+        com_id = #{record.comId,jdbcType=CHAR},
+      </if>
+      <if test="record.callMain != null" >
+        call_main = #{record.callMain,jdbcType=CHAR},
+      </if>
+      <if test="record.callSecondary != null" >
+        call_secondary = #{record.callSecondary,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update base_customer
+    set cus_id = #{record.cusId,jdbcType=CHAR},
+      cus_name = #{record.cusName,jdbcType=VARCHAR},
+      cus_gender_type = #{record.cusGenderType,jdbcType=INTEGER},
+      cus_id_card = #{record.cusIdCard,jdbcType=CHAR},
+      cus_remarks = #{record.cusRemarks,jdbcType=VARCHAR},
+      com_id = #{record.comId,jdbcType=CHAR},
+      call_main = #{record.callMain,jdbcType=CHAR},
+      call_secondary = #{record.callSecondary,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jlhc.base_com.dto.Customer" >
+    update base_customer
+    <set >
+      <if test="cusName != null" >
+        cus_name = #{cusName,jdbcType=VARCHAR},
+      </if>
+      <if test="cusGenderType != null" >
+        cus_gender_type = #{cusGenderType,jdbcType=INTEGER},
+      </if>
+      <if test="cusIdCard != null" >
+        cus_id_card = #{cusIdCard,jdbcType=CHAR},
+      </if>
+      <if test="cusRemarks != null" >
+        cus_remarks = #{cusRemarks,jdbcType=VARCHAR},
+      </if>
+      <if test="comId != null" >
+        com_id = #{comId,jdbcType=CHAR},
+      </if>
+      <if test="callMain != null" >
+        call_main = #{callMain,jdbcType=CHAR},
+      </if>
+      <if test="callSecondary != null" >
+        call_secondary = #{callSecondary,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where cus_id = #{cusId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jlhc.base_com.dto.Customer" >
+    update base_customer
+    set cus_name = #{cusName,jdbcType=VARCHAR},
+      cus_gender_type = #{cusGenderType,jdbcType=INTEGER},
+      cus_id_card = #{cusIdCard,jdbcType=CHAR},
+      cus_remarks = #{cusRemarks,jdbcType=VARCHAR},
+      com_id = #{comId,jdbcType=CHAR},
+      call_main = #{callMain,jdbcType=CHAR},
+      call_secondary = #{callSecondary,jdbcType=VARCHAR}
+    where cus_id = #{cusId,jdbcType=CHAR}
+  </update>
+</mapper>

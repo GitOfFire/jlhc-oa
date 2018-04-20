@@ -1,0 +1,109 @@
+package com.jlhc.oa.service.impl;
+
+import com.jlhc.oa.dao.*;
+import com.jlhc.oa.dto.Right;
+import com.jlhc.oa.dto.User;
+import com.jlhc.oa.service.RightService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author renzhong
+ * @version 1.0
+ * @Description
+ * @Date: Created in 16:52 2018/1/4 0004
+ */
+@Service
+public class RightServieImpl extends BaseServiceImpl implements RightService{
+
+    /**注入UserDao*/
+    @Autowired
+    UserMapper userMapper;
+
+    /**注入roleUserRelationDao*/
+    @Autowired
+    RoleUserRelationMapper roleUserRelationMapper;
+
+    /**注入funcRoleRelationDao*/
+    @Autowired
+    FuncRoleRelationMapper funcRoleRelationMapper;
+
+    /**注入funcRightRelationDao*/
+    @Autowired
+    FuncRightRelationMapper funcRightRelationMapper;
+
+    /**注入rightMapper*/
+    @Autowired
+    RightMapper rightMapper;
+
+    /**
+     * 查询权限的整体集合
+     *
+     * @return
+     */
+    @Override
+    public List<Right> getAllRights() {
+        return new ArrayList<Right>();
+    }
+
+    /**
+     * 根据登录用户的Id得到所有的权限
+     *
+     * @return
+     */
+    @Override
+    public List<String> getRigthsByUserId(@NotNull Integer userId) {
+        //数据校验
+        if (null == userId){
+            return null;
+        }
+        //验证用户是否存在
+        if (this.hasUse(userId)){
+            return  null;
+        };
+
+        //首先根据用户角色关系表查出所属角色Id
+        List<Integer> roleIds = roleUserRelationMapper.selectRoleIdsByUserId(userId);
+        //再根据所有角色,查询出来功能Id
+        List<Integer> funcIds = new ArrayList<>();
+        for (Integer roleId :roleIds ) {
+            List<Integer> findedFuncIds = funcRoleRelationMapper.selectFuncIdsByRoleId(roleId);
+            funcIds.addAll(findedFuncIds);
+        }
+        //logger.info("查询到的所有功能ID",funcIds.toString());
+        //再根据所有功能查询到所有权限
+        List<Integer> rightIds = new ArrayList<>();
+        for (Integer funcId :funcIds ) {
+            List<Integer> findedRightIds = funcRightRelationMapper.selectRightIdsByFuncId(funcId);
+            rightIds.addAll(findedRightIds);
+        }
+        //logger.info("查询到所有的权限Id",rightIds.toString());
+        List<String> rightDatas = new ArrayList<>();
+        for (Integer rightId :rightIds ) {
+            Right right = rightMapper.selectByPrimaryKey(rightId);
+            rightDatas.add(right.getRightData());
+        }
+        //返回权限集合
+        return rightDatas;
+    }
+
+    /**
+     * 用于判断某UserID用户是否存在
+     *
+     * @param userId
+     * @return
+     */
+    private Boolean hasUse(Integer userId){
+
+        //根据userId查询用户
+        User user = userMapper.selectByPrimaryKey(userId);
+        if (null == user){
+            return false;
+        }
+        return true;
+    }
+}

@@ -1,0 +1,62 @@
+package com.jlhc.sell.service.impl;
+
+import com.jlhc.common.exception.NullEntityInDatabaseException;
+import com.jlhc.common.utils.RandomStringUtil;
+import com.jlhc.oa.dao.UserMapper;
+import com.jlhc.oa.dto.user.User;
+import com.jlhc.sell.dao.NoteMapper;
+import com.jlhc.sell.dao.TaskMapper;
+import com.jlhc.sell.dto.Note;
+import com.jlhc.sell.dto.Task;
+import com.jlhc.sell.dto.example.NoteExample;
+import com.jlhc.sell.service.NoteServcie;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+@Transactional(rollbackFor = Exception.class)
+public class NoteServcieImpl implements NoteServcie {
+    @Autowired
+    NoteMapper noteMapper;
+    @Autowired
+    UserMapper userMapper;
+    @Autowired
+    TaskMapper taskMapper;
+    public static NoteExample noteExample = new NoteExample();
+    @Override
+    public Integer createPost(String taskId, String noteContent, Integer userId) throws NullEntityInDatabaseException {
+        User user = userMapper.selectByPrimaryKey(userId);
+        if (null == user){
+            throw new NullEntityInDatabaseException();
+        }
+        Task task = taskMapper.selectByPrimaryKey(taskId);
+        if (null == user){
+            throw new NullEntityInDatabaseException();
+        }
+        Note note = new Note();
+        note.setNoteId(RandomStringUtil.getRandomCode(32,7));
+        note.setNoteContent(noteContent);
+        note.setNoteCreatedTime(new Date());
+        note.setTaskId(taskId);
+        note.setUserId(userId);
+        Integer resultNum = noteMapper.insertSelective(note);
+        return resultNum;
+    }
+
+    @Override
+    public List<Note> queryNotesByTaskId(String taskId) throws NullEntityInDatabaseException {
+        Task task = taskMapper.selectByPrimaryKey(taskId);
+        if (null == task){
+            throw new NullEntityInDatabaseException();
+        }
+        noteExample.clear();
+        noteExample.createCriteria()
+                .andTaskIdEqualTo(taskId);
+        List<Note> notes = noteMapper.selectByExample(noteExample);
+        return notes;
+    }
+}

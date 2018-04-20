@@ -1,0 +1,127 @@
+package com.jlhc.oa.web.controller;
+
+import com.jlhc.oa.common.utils.ResultUtil;
+import com.jlhc.oa.dto.Msg;
+import com.jlhc.oa.dto.user.Organization;
+import com.jlhc.oa.service.OrganizationService;
+import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+/**
+ * @author renzhong
+ * @version 1.0
+ * @Description
+ * @Date: Created in 15:59 2018/1/9 0009
+ */
+@RequestMapping("/organization")
+@RestController
+public class OrganizationController extends BaseController{
+
+    @Autowired
+    OrganizationService organizationService;
+    /**
+     * 添加组织,数据校验,封装数据传递
+     *
+     * @param organization
+     * @param bindingResult
+     * @return
+     */
+    @ApiOperation(value = "6cce076d00f046669289900196ec8b25",notes = "机构:查询",nickname = "机构查询")
+    @RequestMapping(value = "addOrganization",method = RequestMethod.POST)
+    @RequiresPermissions("organization:add")
+    public Msg addOrganization(@RequestBody @Valid Organization organization, BindingResult bindingResult){
+        //首先处理校验异常,已经由springAOP--vaildAspect实现
+        /*if (bindingResult.hasErrors()){
+            Map<String, String> vaildErrorMap = super.getVaildErrorMap(bindingResult);
+            return ResultUtil.vaildError(vaildErrorMap);
+        }*/
+        //然后调用service进行插入处理
+        try {
+            Integer resultNum = organizationService.createOrganization(organization);
+            if (-2 == resultNum){
+                return ResultUtil.operationFailed("组织机构名称相同");
+            } else if (0 == resultNum){
+                return ResultUtil.operationFailed();
+            }
+            return ResultUtil.addSuccess(resultNum);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error(e);
+        }
+    }
+
+    /**
+     * 根据父节点查询组织
+     *
+     * @param orgParentId 父节点ID
+     * @return
+     */
+    @ApiOperation(value = "08715c7ca008454593752e86b0948e8b",notes = "机构:查询",nickname = "机构查询")
+    @RequestMapping(value = "findOrganizationsByParent/{orgParentId}",method = RequestMethod.GET)
+    @RequiresPermissions("organization:query")
+    public Msg findOrganizationsByParent(@PathVariable @NotNull @Max(value = 999999999,message = "最大不能超过9位")Integer orgParentId){
+        try {
+            List<Organization> orgByParent = organizationService.findOrgByParent(orgParentId);
+            return ResultUtil.selectSuccess(orgByParent);
+        }catch (Exception e){
+            logger.error("根据父节点查询组织",e);
+            return ResultUtil.error(e);
+        }
+    }
+
+    /**
+     * 修改组织机构名称&&修改组织节点名称
+     *
+     * @param organization 主要封装信息是id name
+     * @return
+     */
+    @ApiOperation(value = "8736f8adf41a4fa79508857ef2462434",notes = "机构:修改",nickname = "机构修改")
+    @RequestMapping(value = "updateParentOrNameOfOrganization",method = RequestMethod.PUT)
+    @RequiresPermissions("organization:update")
+    public Msg updateParentOrNameOfOrganization(@RequestBody @Valid Organization organization,BindingResult bindingResult){
+        try {
+            Integer resultNum = organizationService.updateNameOfOrganization(organization);
+            if (-2 == resultNum){
+                return ResultUtil.operationFailed("组织机构名称相同");
+            } else if (0 == resultNum){
+                return ResultUtil.operationFailed();
+            }
+            return ResultUtil.updateSuccess(resultNum);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtil.error(e);
+        }
+    }
+    /********组织机构删除*********/
+    /**
+     * 删除组织机构节点,该方法必须提示,需要将其子节点删除,会将用户归于公司总节点下
+     *
+     * @param orgId
+     * @return
+     */
+    @ApiOperation(value = "ba49c4dc6e4a479a84212d739d5d96ea",notes = "机构:删除",nickname = "机构删除")
+    @RequestMapping(value = "deleteOrgById/{orgId}",method = RequestMethod.DELETE)
+    @RequiresPermissions("organization:delete")
+    public Msg deleteOrgById(@PathVariable @Max(value = 999999999,message = "最大不能超过9位") Integer orgId){
+        //调用service方法
+        try {
+            Integer resultNum = organizationService.dropOrgWithChild(orgId);
+            if (resultNum == -2){
+                return ResultUtil.operationFailed("根节点或公司节点不允许直接删除");
+            }else if (resultNum == 0){
+                return ResultUtil.operationFailed();
+            }
+            return ResultUtil.deleteSuccess(resultNum);
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return ResultUtil.error(e);
+        }
+    }
+}

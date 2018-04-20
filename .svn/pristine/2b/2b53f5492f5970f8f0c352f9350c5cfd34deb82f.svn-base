@@ -1,0 +1,99 @@
+package com.jlhc.web.controller;
+
+import com.jlhc.base_com.dto.Company;
+import com.jlhc.base_com.dto.CompanyForPut;
+import com.jlhc.base_com.service.CompanyService;
+import com.jlhc.common.utils.ResultUtil;
+import com.jlhc.oa.dto.Msg;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@RestController
+@RequestMapping("/company")
+public class CompanyController extends BaseController{
+
+    /**注入ComService*/
+    @Autowired
+    CompanyService companyService;
+
+    @PostMapping(value = "postCompany")
+    @RequiresPermissions("company:postCompany")
+    public Msg postCompany(@RequestBody @Valid Company company,BindingResult bindingResult){
+        try{
+            Integer resultNum = companyService.createCompany(company);
+            if (-3 == resultNum){
+                return ResultUtil.operationFailed("公司法定代表人数据不存在,不能指定");
+            }else if (-2 == resultNum){
+                return ResultUtil.operationFailed("数据库中,公司已经存在(用户名名不能重复;社会统一信用代码不能重复)");
+            }
+            return ResultUtil.addSuccess(resultNum);
+        }catch(Exception e){
+            logger.error(e.getMessage(),e);
+            return ResultUtil.error(e);
+        }
+    }
+
+//    @GetMapping("getDate/{date}")
+//    public String getDate(@PathVariable @DateTimeFormat Date date){
+//        logger.info(date.toString());
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//        String format = dateFormat.format(date);
+//        return format;
+//    }
+
+    /**
+     * 修改一个公司的基础数据
+     *
+     * @param company
+     * @return
+     */
+    @PutMapping(value = "putCompany")
+    @RequiresPermissions("company:putCompany")
+    public Msg putCompany(@RequestBody @Valid CompanyForPut company, BindingResult bindingResult){
+        try{
+            Integer resultNum = companyService.reworkCompany(company);
+            if (-3 == resultNum){
+                return ResultUtil.operationFailed("公司/公司法定代表人数据不存在,不能指定");
+            }else if (-2 == resultNum){
+                return ResultUtil.operationFailed("数据库中,公司已经存在(企业名称已经被其他公司使用/社会统一信用代码已经被其他公司使用)");
+            }
+            return ResultUtil.updateSuccess(resultNum);
+        }catch(Exception e){
+            logger.error(e.getMessage(),e);
+            return ResultUtil.error(e);
+        }
+    }
+
+
+    /**
+     * 删除,修改状态
+     *
+     * @param comId
+     * @return
+     */
+    @DeleteMapping(value = "deleteCompany/{comId}")
+    @RequiresPermissions(value = "company:deleteCompany")
+    public Msg deleteCompany(@PathVariable @Length(max = 32,min = 32,message = "32位全球唯一码") String comId){
+        try{
+            Integer resultNum = companyService.dropCompany(comId);
+            if (-3 == resultNum){
+                return ResultUtil.operationFailed("公司不存在");
+            }else if (0 == resultNum){
+                return ResultUtil.operationFailed();
+            }
+            return ResultUtil.deleteSuccess(resultNum);
+        }catch(Exception e){
+            logger.error(e.getMessage(),e);
+            return ResultUtil.error(e);
+        }
+    };
+}

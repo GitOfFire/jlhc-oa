@@ -1,0 +1,129 @@
+package com.jlhc.oa.dto.user;
+
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * 组织机构实例
+ *
+ * @author renzhong
+ * @version 1.0 , 2018-1-9 16:16
+ */
+public class Organization implements Serializable {
+
+    /**组织机构ID,唯一标识*/
+    @Max(value = 999999999,message = "最大不能超过9位")
+    private Integer orgId;
+
+    /**父组织机构Id*/
+    @Max(value = 999999999,message = "最大不能超过9位")
+    @NotNull
+    private Integer orgParentId;
+
+    /**组织机构名称*/
+    @Length(min = 1,max = 64)
+    @NotEmpty
+    private String orgName;
+
+    /**组织机构创建时间*/
+    @Past
+    private Date orgCreatedtime;
+
+    /**组织机构描述*/
+    @Length(max = 200)
+    private String orgDescription;
+
+    private static final long serialVersionUID = 1L;
+
+    public Integer getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Integer orgId) {
+        this.orgId = orgId;
+    }
+
+    public Integer getOrgParentId() {
+        return orgParentId;
+    }
+
+    public void setOrgParentId(Integer orgParentId) {
+        this.orgParentId = orgParentId;
+    }
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName == null ? null : orgName.trim();
+    }
+
+    public Date getOrgCreatedtime() {
+        return orgCreatedtime;
+    }
+
+    public void setOrgCreatedtime(Date orgCreatedtime) {
+        this.orgCreatedtime = orgCreatedtime;
+    }
+
+    public String getOrgDescription() {
+        return orgDescription;
+    }
+
+    public void setOrgDescription(String orgDescription) {
+        this.orgDescription = orgDescription == null ? null : orgDescription.trim();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", orgId=").append(orgId);
+        sb.append(", orgParentId=").append(orgParentId);
+        sb.append(", orgName=").append(orgName);
+        sb.append(", orgCreatedtime=").append(orgCreatedtime);
+        sb.append(", orgDescription=").append(orgDescription);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        Organization other = (Organization) that;
+        return (this.getOrgId() == null ? other.getOrgId() == null : this.getOrgId().equals(other.getOrgId()))
+            && (this.getOrgParentId() == null ? other.getOrgParentId() == null : this.getOrgParentId().equals(other.getOrgParentId()))
+            && (this.getOrgName() == null ? other.getOrgName() == null : this.getOrgName().equals(other.getOrgName()))
+            && (this.getOrgCreatedtime() == null ? other.getOrgCreatedtime() == null : this.getOrgCreatedtime().equals(other.getOrgCreatedtime()))
+            && (this.getOrgDescription() == null ? other.getOrgDescription() == null : this.getOrgDescription().equals(other.getOrgDescription()));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getOrgId() == null) ? 0 : getOrgId().hashCode());
+        result = prime * result + ((getOrgParentId() == null) ? 0 : getOrgParentId().hashCode());
+        result = prime * result + ((getOrgName() == null) ? 0 : getOrgName().hashCode());
+        result = prime * result + ((getOrgCreatedtime() == null) ? 0 : getOrgCreatedtime().hashCode());
+        result = prime * result + ((getOrgDescription() == null) ? 0 : getOrgDescription().hashCode());
+        return result;
+    }
+}

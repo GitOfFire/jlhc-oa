@@ -1,0 +1,12 @@
+package com.jlhc.sell.service;
+
+import com.jlhc.common.exception.NullEntityInDatabaseException;
+import com.jlhc.sell.dto.Note;
+
+import java.util.List;
+
+public interface NoteServcie {
+    Integer createPost(String taskId, String noteContent, Integer userId) throws NullEntityInDatabaseException;
+
+    List<Note> queryNotesByTaskId(String taskId) throws NullEntityInDatabaseException;
+}

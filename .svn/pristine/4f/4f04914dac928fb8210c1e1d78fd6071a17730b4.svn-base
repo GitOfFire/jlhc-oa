@@ -1,0 +1,28 @@
+package com.jlhc.oa.service;
+
+import com.jlhc.oa.dto.function.FuncRoleRelation;
+import com.jlhc.oa.dto.function.Function;
+import com.jlhc.oa.dto.function.Module;
+import com.jlhc.oa.dto.role.RoleIdAndFuncIds;
+import com.jlhc.oa.dto.role.RoleIdAndModuleId;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+public interface FunctionService {
+
+    Map<String,HashSet<Function>> queryFunctionByRoleId(Integer roleId);
+
+    Integer reworkRoleFuncRelations(RoleIdAndFuncIds roleIdAndFuncIds);
+
+    Integer dropRoleFunctionAllRelationOfModule(RoleIdAndModuleId roleIdAndModuleId);
+
+    Integer createFunction(Function function);
+
+    List<Function> queryFunctionBySulrFuncName(String sulrName);
+
+    List<FuncRoleRelation> queryFuncRoleRelationsOfRole(Integer roleId);
+
+    Integer dropRoleFunctionRelationsOfRole(Integer roleId);
+}

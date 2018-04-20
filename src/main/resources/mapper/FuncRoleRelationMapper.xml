@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jlhc.oa.dao.FuncRoleRelationMapper" >
+  <resultMap id="BaseResultMap" type="com.jlhc.oa.dto.function.FuncRoleRelation" >
+    <id column="func_role_id" property="funcRoleId" jdbcType="INTEGER" />
+    <result column="func_id" property="funcId" jdbcType="INTEGER" />
+    <result column="role_id" property="roleId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    func_role_id, func_id, role_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jlhc.oa.dto.function.example.FuncRoleRelationExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jl_func_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null" >
+      <if test="offset != null" >
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null" >
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from jl_func_role
+    where func_role_id = #{funcRoleId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from jl_func_role
+    where func_role_id = #{funcRoleId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jlhc.oa.dto.function.example.FuncRoleRelationExample" >
+    delete from jl_func_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jlhc.oa.dto.function.FuncRoleRelation" useGeneratedKeys="true" keyProperty="id" >
+    insert into jl_func_role (func_role_id, func_id, role_id
+      )
+    values (#{funcRoleId,jdbcType=INTEGER}, #{funcId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jlhc.oa.dto.function.FuncRoleRelation" useGeneratedKeys="true" keyProperty="id" >
+    insert into jl_func_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="funcRoleId != null" >
+        func_role_id,
+      </if>
+      <if test="funcId != null" >
+        func_id,
+      </if>
+      <if test="roleId != null" >
+        role_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="funcRoleId != null" >
+        #{funcRoleId,jdbcType=INTEGER},
+      </if>
+      <if test="funcId != null" >
+        #{funcId,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jlhc.oa.dto.function.example.FuncRoleRelationExample" resultType="java.lang.Integer" >
+    select count(*) from jl_func_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update jl_func_role
+    <set >
+      <if test="record.funcRoleId != null" >
+        func_role_id = #{record.funcRoleId,jdbcType=INTEGER},
+      </if>
+      <if test="record.funcId != null" >
+        func_id = #{record.funcId,jdbcType=INTEGER},
+      </if>
+      <if test="record.roleId != null" >
+        role_id = #{record.roleId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update jl_func_role
+    set func_role_id = #{record.funcRoleId,jdbcType=INTEGER},
+      func_id = #{record.funcId,jdbcType=INTEGER},
+      role_id = #{record.roleId,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jlhc.oa.dto.function.FuncRoleRelation" >
+    update jl_func_role
+    <set >
+      <if test="funcId != null" >
+        func_id = #{funcId,jdbcType=INTEGER},
+      </if>
+      <if test="roleId != null" >
+        role_id = #{roleId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where func_role_id = #{funcRoleId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jlhc.oa.dto.function.FuncRoleRelation" >
+    update jl_func_role
+    set func_id = #{funcId,jdbcType=INTEGER},
+      role_id = #{roleId,jdbcType=INTEGER}
+    where func_role_id = #{funcRoleId,jdbcType=INTEGER}
+  </update>
+
+    <!--根据角色Id找功能Id-->
+    <select id="selectFuncIdsByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+        fr.func_id
+        FROM
+        jl_func_role fr
+        WHERE
+        fr.role_id= #{roleId,jdbcType=INTEGER};
+    </select>
+</mapper>

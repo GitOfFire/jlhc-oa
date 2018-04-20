@@ -1,0 +1,11 @@
+package com.jlhc.oa.service;
+
+import com.jlhc.oa.dto.Right;
+import java.util.List;
+
+public interface RightService {
+
+    public List<Right> getAllRights();
+
+    public List<String> getRigthsByUserId(Integer userId);
+}

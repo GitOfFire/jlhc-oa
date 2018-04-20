@@ -1,0 +1,19 @@
+package com.jlhc.oa.service;
+
+import com.jlhc.oa.dto.role.RoleGroup;
+
+import javax.servlet.http.HttpSession;
+import java.util.List;
+
+public interface RoleGroupService {
+
+    List<RoleGroup> findRoleGroupsByRoleGroupName(String roleGroupName);
+
+    Integer createRoleGroupWithoutTheSameName(RoleGroup roleGroup);
+
+    List<RoleGroup> findRoleGroups(HttpSession httpSession);
+
+    Integer updateRoleGroupWithoutTheSameName(RoleGroup roleGroup);
+
+    Integer dropRoleGroupById(Integer roleGroupId);
+}

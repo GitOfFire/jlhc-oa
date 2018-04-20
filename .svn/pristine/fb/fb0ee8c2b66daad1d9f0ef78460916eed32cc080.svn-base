@@ -1,0 +1,311 @@
+package com.jlhc.oa.service.impl;
+
+import com.jlhc.oa.dao.FuncRoleRelationMapper;
+import com.jlhc.oa.dao.FunctionMapper;
+import com.jlhc.oa.dao.ModuleMapper;
+import com.jlhc.oa.dao.RoleMapper;
+import com.jlhc.oa.dto.function.*;
+import com.jlhc.oa.dto.function.example.FuncRoleRelationExample;
+import com.jlhc.oa.dto.function.example.FunctionExample;
+import com.jlhc.oa.dto.function.example.ModuleExample;
+import com.jlhc.oa.dto.role.Role;
+import com.jlhc.oa.dto.role.example.RoleExample;
+import com.jlhc.oa.dto.role.RoleIdAndFuncIds;
+import com.jlhc.oa.dto.role.RoleIdAndModuleId;
+import com.jlhc.oa.service.FunctionService;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+@Service
+public class FunctionServiceImpl extends BaseServiceImpl implements FunctionService {
+
+    /**功能DAO*/
+    @Autowired
+    FunctionMapper functionMapper;
+    /**角色DAO*/
+    @Autowired
+    RoleMapper roleMapper;
+    /**模块DAO*/
+    @Autowired
+    ModuleMapper moduleMapper;
+    /**功能角色关系DAO*/
+    @Autowired
+    FuncRoleRelationMapper funcRoleRelationMapper;
+
+    private ModuleExample moduleExample = new ModuleExample();
+
+    private FunctionExample functionExample = new FunctionExample();
+
+    private RoleExample roleExample = new RoleExample();
+
+    private FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
+    @Override
+    public Map<Module,HashSet<Function>> queryFunctionByRoleId(Integer roleId) {
+        //数据校验
+        if (null == roleId){
+            return null;
+        }
+        Role role = roleMapper.selectByPrimaryKey(roleId);
+        if (null == role){
+            return null;
+        }
+
+        //开始查询功能
+        //查询角色所有的function
+        //List<Function> functionsOfRole = functionMapper.selectByRoleId(roleId);
+        functionExample.clear();
+        //所有的func集合
+        List<Function> allFunctions = functionMapper.selectByExample(functionExample);
+        //Func集合中取出ALl模块集合拿出来
+        HashSet<Integer> allModuleIds = new HashSet<>();
+        for (Function function : allFunctions) {
+            Integer moduleId = function.getModuleId();
+            allModuleIds.add(moduleId);
+        }
+
+
+        //查到角色拥有的func
+        List<Function> functionsOfRole = functionMapper.selectByRoleId(roleId);
+        //比对,设置拥有的角色
+        for (Function function : allFunctions) {
+            function.setIsSelect(false);
+            for (Function functionOfRole : functionsOfRole) {
+                Boolean isSelected = functionOfRole.equalsById(function);
+
+                if (isSelected){
+
+                    function.setIsSelect(isSelected);
+                    break;
+                }
+            }
+        }
+        Map<Module,HashSet<Function>> map =
+                new HashMap<>();
+        for (Function function : allFunctions) {
+            Integer moduleId = function.getModuleId();
+            Module module = moduleMapper.selectByPrimaryKey(moduleId);
+            if(!map.containsKey(module)){
+                HashSet<Function> theseFunctionsOfModule = new HashSet<Function>();
+                theseFunctionsOfModule.add(function);
+                map.put(module,theseFunctionsOfModule);
+            }
+            HashSet<Function> theseFunctionsOfModule = map.get(module);
+            theseFunctionsOfModule.add(function);
+            map.put(module,theseFunctionsOfModule);
+        }
+
+        return map;
+    }
+
+    /**
+     * 修改某个角色单一模块的functions
+     *
+     * @param roleIdAndFuncIds
+     * @return 修改数据库的条数,其中-3表示数据不存在,-4表示数据来自两个不同的模块
+     */
+    @Override
+    public Integer reworkRoleFuncRelations(RoleIdAndFuncIds roleIdAndFuncIds) {
+        //数据校验,看看数据库中是否有这几条数据
+        Integer roleId = roleIdAndFuncIds.getRoleId();
+        Role role = roleMapper.selectByPrimaryKey(roleId);
+
+        //返回无此数据提示
+        if (role == null){
+            return -3;
+        }
+        List<Integer> funcIds = roleIdAndFuncIds.getFuncIds();
+
+
+        Boolean isEquals = false;
+        //校验func存在性
+        functionExample.clear();
+        List<Function> allFunctions = functionMapper.selectByExample(functionExample);
+        List<Integer> allFunctionIds = this.getFuncIds(allFunctions);
+        isEquals = allFunctionIds.containsAll(funcIds);
+        //返回无此数据提示
+        if (!isEquals){
+            return -3;
+        }
+        //根据FuncId集合获取其相应的moduleId集合,如果发现属于两个模块,我们不予受理,返回-4
+        List<Integer> moduleIds = functionMapper.getFunctionModuleIdsByByIdListParams(funcIds);
+        if(1 < new HashSet<Integer>(moduleIds).size()){
+            return -4;
+        }
+        //System.out.println("模块ID呀!!!!!:"+moduleIds.get(0));
+        //插入数据库,给roleFunctionRelation建立关系就可以
+        //查询某一模块的所有功能ID
+        FunctionExample functionExample = new FunctionExample();
+        functionExample.createCriteria()
+                .andModuleIdEqualTo(moduleIds.get(0));
+        //传来module的所有func
+        List<Function> functionsOftheModule = functionMapper.selectByExample(functionExample);//有问题
+        //logger.info("传来模块的function"+functionsOftheModule);
+        List<Integer> functionsIdsOftheModule = getFuncIds(functionsOftheModule);
+
+        //查询某一角色的所有功能ID
+        List<Function> functionsOftheRole = functionMapper.selectByRoleId(roleId);
+        List<Integer> functionsIdsOftheRole = getFuncIds(functionsOftheRole);
+        //取交集
+        functionsIdsOftheModule.retainAll(functionsIdsOftheRole);
+        //logger.info("取交集的结果:"+functionsIdsOftheModule);
+        //换个新声明
+        List<Integer> functionsIdsOftheRoleAndtheModule = functionsIdsOftheModule;
+        //logger.info("前端传过来的某一角色某一模块的功能集合functionsIdsOftheRoleAndtheModule:"+functionsIdsOftheRoleAndtheModule.toString());
+        //来一次copy
+        List<Integer> noChangeRelationFuncIds = new ArrayList<>();
+        noChangeRelationFuncIds.addAll(functionsIdsOftheRoleAndtheModule);
+
+        //求出不需要改变关系的功能id
+        noChangeRelationFuncIds.retainAll(funcIds);
+        //logger.info("不需要改变关系的功能id...noChangeRelationFuncIds:"+noChangeRelationFuncIds.toString());
+        //再来一次copy
+        List<Integer> needDelRelationFuncIds = new ArrayList<>();
+        needDelRelationFuncIds.addAll(functionsIdsOftheRoleAndtheModule);
+        //求出需要删掉关系的功能Id
+        needDelRelationFuncIds.removeAll(noChangeRelationFuncIds);
+        //logger.info("需要删掉关系的功能Id...needDelRelationFuncIds"+needDelRelationFuncIds.toString());
+        //求出需要添加关系的功能Ids
+        List<Integer> needAddRelationFuncIds = new ArrayList<>();
+        needAddRelationFuncIds.addAll(funcIds);
+        needAddRelationFuncIds.removeAll(noChangeRelationFuncIds);
+        //logger.info("需要添加关系的功能Ids...needAddRelationFuncIds"+needAddRelationFuncIds.toString());
+        Integer resultNum = 0;
+        //调用删除关系方法
+        if (!(null == needDelRelationFuncIds || 0 == needDelRelationFuncIds.size())){
+            FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
+            //批量删除关系
+            funcRoleRelationExample.createCriteria()
+                    .andRoleIdEqualTo(roleId)
+                    .andFuncIdIn(needDelRelationFuncIds);
+            resultNum += funcRoleRelationMapper.deleteByExample(funcRoleRelationExample);
+        }
+
+        //调用添加关系方法
+        if (!(null == needAddRelationFuncIds || 0 == needAddRelationFuncIds.size())){
+            //logger.info("开始添加了:"+needAddRelationFuncIds);
+            FuncRoleRelation addFuncRoleRelation = new FuncRoleRelation();
+            for (Integer needAddRelationFuncId : needAddRelationFuncIds) {
+                addFuncRoleRelation.setRoleId(roleId);
+                addFuncRoleRelation.setFuncId(needAddRelationFuncId);
+                resultNum += funcRoleRelationMapper.insert(addFuncRoleRelation);
+            }
+        }
+
+        return resultNum;
+    }
+
+    /**
+     * 删除某一角色,某一模块的所有功能
+     *
+     * @param roleIdAndModuleId
+     * @return
+     */
+    @Override
+    public Integer dropRoleFunctionAllRelationOfModule(RoleIdAndModuleId roleIdAndModuleId) {
+        Integer resultNum = 0;
+        //首先进行数据存在性校验
+        Integer roleId = roleIdAndModuleId.getRoleId();
+        roleExample.clear();
+        roleExample.createCriteria()
+                .andRoleIdEqualTo(roleId);
+        int roleCount = roleMapper.countByExample(roleExample);
+        if (0 >= roleCount){
+            return -3;
+        }else if (1 < roleCount){
+            return -2;
+        }
+        Integer moduleId = roleIdAndModuleId.getModuleId();
+        moduleExample.clear();
+        moduleExample.createCriteria()
+                .andModuleIdEqualTo(moduleId);
+        int moduleCount = moduleMapper.countByExample(moduleExample);
+        if (0 >= moduleCount){
+            return -3;
+        }else if (1 < moduleCount){
+            return -2;
+        }
+        //根据module查询function
+        functionExample.clear();
+        functionExample.createCriteria()
+                .andModuleIdEqualTo(moduleId);
+        List<Function> needDelFunctionsOfModule = functionMapper.selectByExample(functionExample);
+        List<Integer> needDelFunctionIdsOfModule = this.getFuncIds(needDelFunctionsOfModule);
+        //查到所有要删除的relation
+        funcRoleRelationExample.clear();
+        funcRoleRelationExample.createCriteria()
+                .andRoleIdEqualTo(roleId)
+                .andFuncIdIn(needDelFunctionIdsOfModule);
+        List<FuncRoleRelation> needDelfuncRoleRelations = funcRoleRelationMapper.selectByExample(funcRoleRelationExample);
+        if (null == needDelfuncRoleRelations || 0 >= needDelfuncRoleRelations.size()){
+            return 0;
+        }
+        //执行进行删除
+        List<Integer> relIds = this.getRelIds(needDelfuncRoleRelations);
+        for (Integer relId : relIds) {
+
+            resultNum += funcRoleRelationMapper.deleteByPrimaryKey(relId);
+        }
+        return resultNum;
+    }
+
+    /**
+     * 获取某个数据封装对象集合的全部Id,用于对关系的修改
+     *
+     * @param functions
+     * @return
+     */
+    @NotNull
+    private List<Integer> getFuncIds(List<Function> functions) {
+        List<Integer> functionsIds= new ArrayList<>();
+        for (Function f:functions
+                ) {
+            functionsIds.add(f.getFuncId());
+        }
+        return functionsIds;
+    }
+
+    /**
+     * 得到功能的id
+     * @param modules
+     * @return
+     */
+    @NotNull
+    private List<Integer> getModIds(List<Module> modules){
+        List<Integer> moduleIds = new ArrayList<>();
+        for (Module module :modules ) {
+            moduleIds.add(module.getModuleId());
+        }
+        return moduleIds;
+    }
+
+    /**
+     * 得到relationId
+     * @param funcRoleRelations
+     * @return
+     */
+    @NotNull
+    private List<Integer> getRelIds(List<FuncRoleRelation> funcRoleRelations){
+        List<Integer> relIds = new ArrayList<>();
+        for (FuncRoleRelation funcRoleRelation :funcRoleRelations ) {
+            relIds.add(funcRoleRelation.getFuncRoleId());
+        }
+        return relIds;
+    }
+    /**
+     * 比较两个Integer值是否相等
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    private boolean compareInteger(Integer num1,Integer num2){
+        if(null == num1 || null == num2){
+            return false;
+        }
+
+        return num1.equals(num2);
+    }
+}

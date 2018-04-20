@@ -1,0 +1,129 @@
+package com.jlhc.base_com.service.impl;
+
+import com.jlhc.base_com.dao.CompanyMapper;
+import com.jlhc.base_com.dao.CustomerMapper;
+import com.jlhc.base_com.dto.Company;
+import com.jlhc.base_com.dto.CompanyForPut;
+import com.jlhc.base_com.dto.Customer;
+import com.jlhc.base_com.dto.example.CompanyExample;
+import com.jlhc.base_com.dto.example.CustomerExample;
+import com.jlhc.base_com.service.CompanyService;
+import com.jlhc.common.utils.RandomStringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
+@Service
+@Transactional
+public class CompanyServiceimpl implements CompanyService {
+
+    @Autowired
+    CompanyMapper companyMapper;
+
+    @Autowired
+    CustomerMapper customerMapper;
+
+    private static CompanyExample companyExample = new CompanyExample();
+
+    private static CustomerExample customerExample = new CustomerExample();
+    @Override
+    public Integer createCompany(Company company) {
+        Integer resultNum = 0;
+        //首先进行存在性验证
+        //验证社会统一信息编码
+        companyExample.clear();
+        companyExample.createCriteria()
+                .andComUnicodeEqualTo(company.getComUnicode());
+        List<Company> companies = companyMapper.selectByExample(companyExample);
+        //验证公司名称
+        companyExample.clear();
+        companyExample.createCriteria()
+                .andComNameEqualTo(company.getComName());
+        companies.addAll(companyMapper.selectByExample(companyExample));
+        if (0 < companies.size() || null == companies){
+            return -2;
+        }
+        Customer customer = customerMapper.selectByPrimaryKey(company.getCusId());
+        if (null == customer){
+            return -3;
+        }
+        String UUID = RandomStringUtil.getRandomCode(32, 7);
+        company.setComId(UUID);
+        resultNum += companyMapper.insert(company);
+        return resultNum;
+    }
+
+    /**
+     * 修改一个公司的基本信息,包括修改法人
+     *
+     * @param company
+     * @return
+     */
+    @Override
+    public Integer reworkCompany(CompanyForPut company) {
+        Integer resultNum = 0;
+        //存在性判断,用户和公司都存在
+        Company findByComId = companyMapper.selectByPrimaryKey(company.getComId());
+        Customer customer = customerMapper.selectByPrimaryKey(company.getCusId());
+        if (null == findByComId || null == customer){
+            return -3;
+        }
+        //重复判断,关键信息不能与其他重复
+        //验证社会统一信息编码
+        companyExample.clear();
+        companyExample.createCriteria()
+                .andComUnicodeEqualTo(company.getComUnicode())
+                .andComIdNotEqualTo(company.getComId());
+        List<Company> companies = companyMapper.selectByExample(companyExample);
+        //验证公司名称
+        companyExample.clear();
+        companyExample.createCriteria()
+                .andComNameEqualTo(company.getComName())
+                .andComIdNotEqualTo(company.getComId());
+        companies.addAll(companyMapper.selectByExample(companyExample));
+        if (0 < companies.size() || null == companies){
+            return -2;
+        }
+        //执行修改操作
+        Company finalCompany = new Company();
+        finalCompany.setComId(company.getComId());
+        finalCompany.setComAddress(company.getComAddress());
+        finalCompany.setComBusinessTerm(company.getComBusinessTerm());
+        finalCompany.setComBussinessScope(company.getComBussinessScope());
+        finalCompany.setComCapital(company.getComCapital());
+        finalCompany.setComDescription(company.getComDescription());
+        finalCompany.setComFoundTime(company.getComFoundTime());
+        finalCompany.setComName(company.getComName());
+        finalCompany.setCusId(company.getCusId());
+        finalCompany.setComUnicode(company.getComUnicode());
+        finalCompany.setComType(company.getComType());
+        resultNum += companyMapper.updateByPrimaryKeySelective(finalCompany);
+        return resultNum;
+    }
+
+    /**
+     * 删除,修改状态
+     *
+     * @param comId
+     * @return
+     */
+    @Override
+    public Integer dropCompany(String comId) {
+        Integer resultNum = 0;
+        if (null == comId||"".equalsIgnoreCase(comId)){
+            return 0;
+        }
+        //校验公司是否存在
+        Company company = companyMapper.selectByPrimaryKey(comId);
+        if (null == company){
+            return -3;
+        }
+        //执行删除动作
+        Company beDeletedCom  = new Company();
+        beDeletedCom.setComId(comId);
+        beDeletedCom.setComStateType(0);
+        resultNum += companyMapper.updateByPrimaryKeySelective(beDeletedCom);
+        return resultNum;
+    }
+}

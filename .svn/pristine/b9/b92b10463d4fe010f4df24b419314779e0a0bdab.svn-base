@@ -1,0 +1,12 @@
+package com.jlhc.base_com.service;
+
+import com.jlhc.base_com.dto.Company;
+import com.jlhc.base_com.dto.CompanyForPut;
+
+public interface CompanyService {
+    Integer createCompany(Company company);
+
+    Integer reworkCompany(CompanyForPut company);
+
+    Integer dropCompany(String comId);
+}

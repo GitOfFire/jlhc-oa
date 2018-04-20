@@ -1,0 +1,91 @@
+package com.jlhc;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.servlet.DispatcherServlet;
+
+import javax.sql.DataSource;
+
+@SpringBootApplication
+@ComponentScan
+@MapperScan("com.jlhc.*.dao")
+public class ApplicationJlhc {
+    public static void main(String[] args) {
+        SpringApplication.run(ApplicationJlhc.class);
+        System.out.println("jlhc_oa启动了");
+
+    }
+
+    /**
+     * 修改DispatcherServlet默认配置
+     *
+     * @param dispatcherServlet
+     * @return
+     */
+    @Bean
+    public ServletRegistrationBean dispacherRegistration(DispatcherServlet dispatcherServlet) {
+        ServletRegistrationBean registration = new ServletRegistrationBean(dispatcherServlet);
+        registration.getUrlMappings().clear();
+        registration.addUrlMappings("*.do");//只有*。do的请求能通过
+        registration.addUrlMappings("/*");//任何请求都能通过
+        //registration.addUrlMappings("*.json");
+        return registration;
+    }
+
+    /**
+     * 链接池
+     *
+     * @return 数据源
+     */
+    @Bean
+    public DataSource dataSource() {
+        HikariConfig config = new HikariConfig("/hikari.properties");
+        HikariDataSource dataSource = new HikariDataSource(config);
+        return dataSource;
+
+    }
+
+    /**
+     * sql工厂
+     *
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    public SqlSessionFactory sqlSessionFactoryBean() throws Exception {
+        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+        sqlSessionFactoryBean.setDataSource(dataSource());
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:/mapper/*.xml"));
+
+        return sqlSessionFactoryBean.getObject();
+    }
+
+    /**
+     * 事务管理
+     *
+     * @return
+     */
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
+
+
+}
+
+
+
+

@@ -1,0 +1,190 @@
+package com.jlhc.oa.service.impl;
+
+import com.jlhc.oa.dao.OrganizationMapper;
+import com.jlhc.oa.dao.RoleGroupMapper;
+import com.jlhc.oa.dao.RoleMapper;
+import com.jlhc.oa.dto.role.Role;
+import com.jlhc.oa.dto.role.example.RoleExample;
+import com.jlhc.oa.dto.role.RoleGroup;
+import com.jlhc.oa.dto.role.example.RoleGroupExample;
+import com.jlhc.oa.dto.user.Organization;
+import com.jlhc.oa.dto.user.User;
+import com.jlhc.oa.service.RoleGroupService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author renzhong
+ * @version 1.0
+ * @Description
+ * @Date: Created in 10:43 2018/1/5 0005
+ */
+@Service
+@Transactional
+public class RoleGroupServiceImpl implements RoleGroupService {
+
+    /**RoleGroupDao*/
+    @Autowired
+    RoleGroupMapper roleGroupMapper;
+    /**OrganizationMapper*/
+    @Autowired
+    OrganizationMapper organizationMapper;
+    /**RoleMapper*/
+    @Autowired
+    RoleMapper roleMapper;
+
+
+
+    /**
+     * 查询角色据根据组名称
+     *
+     * @param roleGroupName 角色组名称
+     * @return
+     */
+    public List<RoleGroup> findRoleGroupsByRoleGroupName(String roleGroupName){
+        if (null == roleGroupName|| "".equals(roleGroupName)){
+            return null;
+        }
+
+        //根据roleGroup建立example
+
+        RoleGroupExample roleGroupExampleWithRole = new RoleGroupExample();
+
+        //一个参数,名称
+        roleGroupExampleWithRole.createCriteria()
+            .andGroupNameEqualTo(roleGroupName);
+        List<RoleGroup> roleGroupsByRoleGroupName = roleGroupMapper.selectByExample(roleGroupExampleWithRole);
+        return roleGroupsByRoleGroupName;
+    }
+
+    /**
+     * 创建角色组,不允许同名,在插入数据为orgId对应数据不存在的时候,数据归于默认组织机构
+     *
+     * @param roleGroup
+     * @return
+     */
+    public Integer createRoleGroupWithoutTheSameName(RoleGroup roleGroup){
+        //添加对null的判断
+        if (null == roleGroup){
+            return 0;
+        }
+        //多写一个根据用户名查询组对象的接口
+        List<RoleGroup> roleGroups = this.findRoleGroupsByRoleGroupName(roleGroup.getGroupName());
+        RoleGroupExample roleGroupExampleWithOrgId = new RoleGroupExample();
+        Organization organization = organizationMapper.selectByPrimaryKey(roleGroup.getOrgId());
+        System.out.println(organization);
+        //这里不能用null判断.只能用size来判断
+        if (roleGroups.size() > 0){
+            //有结果,说明有重名,这里返回-2,说明有重名
+            return -2;
+        }else if ( null == organization){
+            //无该组织机构,设置组织机构为0
+            roleGroup.setOrgId(0);
+        }
+        int resultNum = roleGroupMapper.insert(roleGroup);
+        return resultNum;
+    }
+
+    /**
+     *  查询RoleGroup对象的集合,根据用户的组织机构查询
+     *
+     * @return
+     */
+    @Override
+    public List<RoleGroup> findRoleGroups(HttpSession httpSession){//这里用了笨的获取session的方法
+        //获取当前用户的组织id
+        User loginUser = (User)httpSession.getAttribute("user");
+        //根据用户id查询用户所属的组织,是一个集合
+        List<Organization> organizations = organizationMapper.selectOrganizationByUserId(loginUser.getUserId());
+        //角色组集合
+        //Set<RoleGroup> roleGroups = new HashSet<>();
+        List<RoleGroup> roleGroups = new ArrayList<>();
+        for (Organization organization :organizations) {
+            //当前组织所有的角色组
+            RoleGroupExample roleGroupExample = new RoleGroupExample();
+            roleGroupExample.createCriteria().andOrgIdEqualTo(organization.getOrgId());
+            List<RoleGroup> roleGroupsAtOnlyOneOrg = roleGroupMapper.selectByExample(roleGroupExample);
+            roleGroups.addAll(roleGroupsAtOnlyOneOrg);
+        }
+        //类型转换
+        //List<RoleGroup> resultRoleGroups = new ArrayList<>(roleGroups);
+        return roleGroups;
+    }
+
+    /**
+     * 修改角色组对象,不同的名称,而且存储的组织机构存在
+     *
+     * @param roleGroup
+     * @return 修改结果
+     */
+    @Override
+    public Integer updateRoleGroupWithoutTheSameName(RoleGroup roleGroup) {
+
+        //查一下数据库,去重
+        //添加对null的判断
+        if (null == roleGroup){
+            return 0;
+        }
+        //多写一个根据用户名查询组对象的接口,判断是否有重名
+        List<RoleGroup> roleGroups = this.findRoleGroupsByRoleGroupName(roleGroup.getGroupName());
+        RoleGroupExample roleGroupExampleWithOrgId = new RoleGroupExample();
+        Organization organization = organizationMapper.selectByPrimaryKey(roleGroup.getOrgId());
+        //这里不能用null判断.只能用size来判断
+        if (roleGroups.size()>0 || null == organization){
+            //说明有重名或者无OrgId的组织存在,这里返回-2,说明有重名或者无组织机构
+            return -2;
+        }
+        Integer resultNum = roleGroupMapper.updateByPrimaryKeySelective(roleGroup);
+        return resultNum;
+    }
+
+    /**
+     * 删除角色组
+     *
+     * @param roleGroupId
+     */
+    @Override
+    public Integer dropRoleGroupById(Integer roleGroupId) {
+        //根据ID获取角色组
+        RoleGroup roleGroup = roleGroupMapper.selectByPrimaryKey(roleGroupId);
+        //判定是不是默认组,roleGroupDefState:1,默认组,roleGroupDefState:0,不是默认组
+        if (1 == roleGroup.getGroupDefState()){
+            //默认组不允许删除
+            return -2;
+        }
+        //不是默认组,判定是否有角色,用到角色查询,根据角色组ID查询角色
+        List<Role> roles = roleMapper.selectByGroupId(roleGroupId);
+        //没有角色,直接删除
+        if (0 == roles.size()){
+            //直接删除
+            int resultNum = roleGroupMapper.deleteByPrimaryKey(roleGroupId);
+            return resultNum;
+        } else{
+            //有角色,将其放入默认组中
+            //一个组织只有一个默认组
+            //查询默认组
+            RoleGroupExample roleGroupExample = new RoleGroupExample();
+            roleGroupExample.createCriteria().andGroupDefStateEqualTo(1).andOrgIdEqualTo(roleGroup.getOrgId());//这里得到的默认组是一个
+            List<RoleGroup> defRoleGroups = roleGroupMapper.selectByExample(roleGroupExample);
+            RoleGroup defRoleGroup;
+            if (defRoleGroups.size() > 0){
+                //查询到的默认组
+                defRoleGroup = defRoleGroups.get(0);
+                //修改角色的角色组id
+                for (Role role : roles) {
+                    role.setRoleGroupId(defRoleGroup.getGroupId());
+                    RoleExample roleExample = new RoleExample();
+                    roleExample.createCriteria().andRoleGroupIdEqualTo(defRoleGroup.getOrgId());
+                    roleMapper.updateByExampleSelective(role,roleExample);
+                }
+            }
+            //全部放入后,删除默认组
+            int resultNum = roleGroupMapper.deleteByPrimaryKey(roleGroupId);
+            return resultNum;
+        }
+    }
+}

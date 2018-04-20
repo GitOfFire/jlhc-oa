@@ -1,0 +1,22 @@
+package com.jlhc.base_com.service;
+
+import com.jlhc.base_com.dto.Customer;
+import com.jlhc.base_com.dto.CustomerNotValidId;
+
+import java.util.List;
+
+public interface CustomerService {
+    Integer createCustomer(CustomerNotValidId customerNotValidId);
+
+    boolean hasTheSameIdCard(Customer customer, Customer customer1);
+
+    Customer queryCustomersByIdCard(String cusIdCard);
+
+    Integer reworkCustomer(Customer customer);
+
+    Integer dropCustomerById(String cusId);
+
+    List<Customer> queryCustomersByComId(String comId);
+
+    Customer queryRepresentativeOfCom(String comId);
+}
