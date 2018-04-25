@@ -29,7 +29,7 @@ public class NoteServiceImpl implements NoteService {
     UserMapper userMapper;
     @Autowired
     TaskMapper taskMapper;
-    public static NoteExample noteExample = new NoteExample();
+//    public static NoteExample noteExample = new NoteExample();
     @Override
     public Integer createPost(String taskId, String noteContent, Integer userId) throws NullEntityInDatabaseException {
         User user = userMapper.selectByPrimaryKey(userId);
@@ -56,6 +56,7 @@ public class NoteServiceImpl implements NoteService {
         if (null == task){
             throw new NullEntityInDatabaseException();
         }
+        NoteExample noteExample = new NoteExample();
         noteExample.clear();
         noteExample.createCriteria()
                 .andTaskIdEqualTo(taskId);

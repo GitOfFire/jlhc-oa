@@ -15,7 +15,7 @@ import java.util.List;
 public class FlowServiceImpl implements FlowService {
     @Autowired
     FlowMapper flowMapper;
-    public static FlowExample flowExample = new FlowExample();
+//    public static FlowExample flowExample = new FlowExample();
     /**
      * 查询任务的所有流转记录
      *
@@ -27,6 +27,7 @@ public class FlowServiceImpl implements FlowService {
         if (null == taskId||"".equals(taskId)){
             throw new NullPointerException();
         }
+        FlowExample flowExample = new FlowExample();
         flowExample.clear();
         flowExample.createCriteria()
                 .andTaskIdEqualTo(taskId);

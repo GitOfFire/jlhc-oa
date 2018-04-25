@@ -53,7 +53,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
     @Autowired
     private OrganizationService organizationService;
 
-    private UserExample userExample = new UserExample();
     /**
      * 查询用户的所有权限信息,用于开发时给系统管理员使用
      *
@@ -65,6 +64,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
         if (null == username){
             return null;
         }
+        UserExample userExample = new UserExample();
         userExample.clear();
         userExample.createCriteria()
             .andUserUsernameEqualTo(username);
@@ -181,7 +181,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
 //            UserOrganizationRelationExample userOrganizationRelationExample = new UserOrganizationRelationExample();
 //            userOrganizationRelationExample.createCriteria().andOrgIdEqualTo(orgId);
             //组织机构存在,根据组织机构OrgId,查询对应的用户
-            userExample.clear();
+           UserExample userExample = new UserExample();
+           userExample.clear();
             userExample.createCriteria()
                     .andOrgIdEqualTo(orgId);
             users.addAll( userMapper.selectByExample(userExample));
@@ -218,7 +219,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
                 return null;
             }
             for (Integer childId :allChildrenOrgId ) {
-                userExample.clear();
+               UserExample userExample = new UserExample();
+               userExample.clear();
                 userExample.createCriteria()
                         .andOrgIdEqualTo(childId);
                 users.addAll(userMapper.selectByExample(userExample));
@@ -311,6 +313,29 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
         }
         List<User> users = userMapper.selectUsersInOrgs(orgIds);
         return users;
+    }
+
+    /**
+     * 重置某个用户的密码
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public Integer reworkUserPasswdToDef(Integer userId) throws NullEntityInDatabaseException, UnsupportedEncodingException, NoSuchAlgorithmException {
+        if (null == userId){
+            return 0;
+        }
+        User user = userMapper.selectByPrimaryKey(userId);
+        if (null == user){
+            throw new NullEntityInDatabaseException();
+        }
+        String MD5passwd = MD5Utils.EncoderByMd5(user.getUserUsername());
+        User userForUpdate = new User();
+        userForUpdate.setUserId(userId);
+        userForUpdate.setUserPasswd(MD5passwd);
+        int resultNum = userMapper.updateByPrimaryKeySelective(userForUpdate);
+        return resultNum;
     }
 
 
@@ -518,8 +543,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
             return -3;
         }
         //验证密码是否正确
-        String oldMD5Passwords = MD5Utils.EncoderByMd5(oldPasswords);
-        boolean equals = beFindUser.getUserPasswd().equals(oldMD5Passwords);
+        //String oldMD5Passwords = MD5Utils.EncoderByMd5(oldPasswords);
+        //boolean equals = beFindUser.getUserPasswd().equals(oldMD5Passwords);
+        boolean equals = beFindUser.getUserPasswd().equals(oldPasswords);
 //        logger.info("数据库中的加密密码:"+beFindUser.getUserPasswd());
 //        logger.info("输入的求验证的密码:"+oldMD5Passwords);
         if (!equals){
@@ -530,8 +556,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
         //执行修改
         User user = new User();
         user.setUserId(userId);
-        String newMD5Passwords = MD5Utils.EncoderByMd5(newPasswords);
-        user.setUserPasswd(newMD5Passwords);
+        //String newMD5Passwords = MD5Utils.EncoderByMd5(newPasswords);
+        //user.setUserPasswd(newMD5Passwords);
+        user.setUserPasswd(newPasswords);
         resultNum += userMapper.updateByPrimaryKeySelective(user);
         return resultNum;
     }
@@ -593,6 +620,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
         if (null == username){
             return null;
         }
+        UserExample userExample = new UserExample();
         userExample.clear();
         userExample.createCriteria()
                 .andUserUsernameEqualTo(username);
@@ -610,10 +638,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
      * @return 相同名字的用户集合
      */
     private List<User> queryUsersByUserName(String username) {
-        userExample.clear();
+       UserExample userExample = new UserExample();
+       userExample.clear();
         userExample.createCriteria()
-                .andUserUsernameEqualTo(username);
-                //.andUserStateEqualTo(1);
+        .andUserUsernameEqualTo(username);
+//.andUserStateEqualTo(1);
         return userMapper.selectByExample(userExample);
     }
 
@@ -625,7 +654,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService{
      * @return
      */
     private List<User> queryUserByUserNameWithoutTheUserId(String username,Integer userId) {
-        userExample.clear();
+       UserExample userExample = new UserExample();
+       userExample.clear();
         userExample.createCriteria()
                 .andUserUsernameEqualTo(username)
                 .andUserIdNotEqualTo(userId);

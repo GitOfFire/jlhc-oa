@@ -29,7 +29,7 @@ public class CompanySolrServiceImpl extends BaseServiceImpl implements CompanySo
     @Autowired
     CustomerMapper customerMapper;
 
-    CustomerExample customerExample = new CustomerExample();
+    //CustomerExample customerExample = new CustomerExample();
 
     public static SolrServer server;
 
@@ -74,6 +74,7 @@ public class CompanySolrServiceImpl extends BaseServiceImpl implements CompanySo
 //        }
         companySolr.setCusName(company.getCusName());
         //查一下其他相关人物,有就添加
+        CustomerExample customerExample = new CustomerExample();
         customerExample.clear();
         customerExample.createCriteria()
                 .andComIdEqualTo(company.getComId());
@@ -318,6 +319,7 @@ public class CompanySolrServiceImpl extends BaseServiceImpl implements CompanySo
     public void reworkByComId(Company company) throws IOException, SolrServerException {
         SolrServer solrServer = getSolrServer();
         CompanySolr companySolr = new CompanySolr();
+        CustomerExample customerExample = new CustomerExample();
         customerExample.clear();
         customerExample.createCriteria()
             .andComIdEqualTo(company.getCusName());

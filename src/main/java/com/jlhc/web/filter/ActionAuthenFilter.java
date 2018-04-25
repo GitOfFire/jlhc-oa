@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,8 +40,7 @@ public class ActionAuthenFilter implements Filter{
         httpResponse.setHeader("Access-Control-Allow-Credentials","true");
         httpResponse.setHeader("Access-Control-Max-Age", "3600");
         httpResponse.addHeader("Access-Control-Allow-Headers", "Authorization, Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With");
-
-        httpResponse.setHeader("Pragma","No-cache"); 
+        httpResponse.setHeader("Pragma","No-cache");
     	httpResponse.setHeader("Cache-Control", "no-cache");  
     	httpResponse.setDateHeader("Expires", 0); 
     	

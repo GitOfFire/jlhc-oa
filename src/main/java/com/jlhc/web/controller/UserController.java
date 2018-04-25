@@ -419,4 +419,24 @@ public class UserController extends BaseController{
             return errorResultOperation(e);
         }
     }
+
+    /**
+     * 重置密码
+     *
+     * @param userId
+     * @return
+     */
+    @PutMapping("putUserPasswdToDef/{userId}")
+    @RequiresPermissions("user:putUserPasswdToDef")
+    public Msg putUserPasswdToDef(@PathVariable @Max(999999999) Integer userId){
+        try{
+            Integer resultNum  = userService.reworkUserPasswdToDef(userId);
+            if (0 >= resultNum){
+                return ResultUtil.operationFailed();
+            }
+            return ResultUtil.updateSuccess(resultNum);
+        }catch(Exception e){
+            return errorResultOperation(e);
+        }
+    }
 }

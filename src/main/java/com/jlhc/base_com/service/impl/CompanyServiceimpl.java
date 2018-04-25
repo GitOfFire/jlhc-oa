@@ -35,9 +35,9 @@ public class CompanyServiceimpl extends BaseServiceImpl implements CompanyServic
     @Autowired
     CompanySolrService companySolrService;
 
-    private static CompanyExample companyExample = new CompanyExample();
-
-    private static CustomerExample customerExample = new CustomerExample();
+//    private static CompanyExample companyExample = new CompanyExample();
+//
+//    private static CustomerExample customerExample = new CustomerExample();
 
     /**
      * 新添加一个公司信息同时同步到solr中
@@ -50,6 +50,7 @@ public class CompanyServiceimpl extends BaseServiceImpl implements CompanyServic
         Integer resultNum = 0;
         //首先进行存在性验证
         //验证社会统一信息编码
+        CompanyExample companyExample = new CompanyExample();
         companyExample.clear();
         companyExample.createCriteria()
                 .andComUnicodeEqualTo(company.getComUnicode());
@@ -118,6 +119,7 @@ public class CompanyServiceimpl extends BaseServiceImpl implements CompanyServic
 //        }
         //重复判断,关键信息不能与其他重复
         //验证社会统一信息编码
+        CompanyExample companyExample = new CompanyExample();
         companyExample.clear();
         companyExample.createCriteria()
                 .andComUnicodeEqualTo(company.getComUnicode())

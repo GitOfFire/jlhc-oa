@@ -51,11 +51,11 @@ public class OrganizationServiceImpl implements OrganizationService{
     @Autowired
     RoleMapper roleMapper;
 
-    RoleGroupExample roleGroupExample = new RoleGroupExample();
-
-    OrganizationExample organizationExample = new OrganizationExample();
-
-    RoleExample roleExample = new RoleExample();
+//    RoleGroupExample roleGroupExample = new RoleGroupExample();
+//
+//    OrganizationExample organizationExample = new OrganizationExample();
+//
+//    RoleExample roleExample = new RoleExample();
     /**
      * 判断下是不是root节点或者企业节点
      *
@@ -200,6 +200,7 @@ public class OrganizationServiceImpl implements OrganizationService{
             throw new NullEntityInDatabaseException();
         }
         //将角色组所属角色的角色组关系换到上级默认角色组
+        RoleGroupExample roleGroupExample = new RoleGroupExample();
         roleGroupExample.clear();
         roleGroupExample.createCriteria()
                 .andOrgIdEqualTo(domainOrgIdToUp)
@@ -251,6 +252,7 @@ public class OrganizationServiceImpl implements OrganizationService{
 
         //获取默认角色组所有角色
         List<Role> allDefRolesAtDomain =  new ArrayList<>();
+        RoleExample roleExample = new RoleExample();
         for (RoleGroup roleGroupAtDomain :allDefRoleGroupsAtDomain) {
             roleExample.clear();
             roleExample.createCriteria()
@@ -417,6 +419,7 @@ public class OrganizationServiceImpl implements OrganizationService{
         //执行创建动作
         int resultNum = organizationMapper.insert(organization);//这里不插入空,哪怕报错
         //插入组织机构默认的角色组
+        OrganizationExample organizationExample = new OrganizationExample();
         organizationExample.clear();
         organizationExample.createCriteria()
                 .andOrgNameEqualTo(organization.getOrgName())
@@ -504,6 +507,7 @@ public class OrganizationServiceImpl implements OrganizationService{
      */
     @Override
     public List<Organization> queryCompanyOrgsWithPageInfo(String orgNameAsCom, Integer offSet, Integer limit) {
+        OrganizationExample organizationExample = new OrganizationExample();
         organizationExample.clear();
         organizationExample.createCriteria()
                 .andOrgNameLike("%"+orgNameAsCom+"%")
@@ -555,6 +559,7 @@ public class OrganizationServiceImpl implements OrganizationService{
         }
         List<Organization> organizations;
         if (0 == orgId){
+            OrganizationExample organizationExample = new OrganizationExample();
             //处理总根节点
             organizationExample.clear();
             organizations = organizationMapper.selectByExample(organizationExample);
@@ -581,6 +586,7 @@ public class OrganizationServiceImpl implements OrganizationService{
         }
         List<Organization> organizations;
         if (0 == orgId){
+            OrganizationExample organizationExample = new OrganizationExample();
             //处理总根节点
             organizationExample.clear();
             organizations = organizationMapper.selectByExample(organizationExample);
@@ -627,6 +633,7 @@ public class OrganizationServiceImpl implements OrganizationService{
         if (pid == domainOrg.getOrgId()){
             return allChildrenOrg;
         }else {
+            OrganizationExample organizationExample = new OrganizationExample();
             organizationExample.clear();
             organizationExample.createCriteria()
                     .andOrgParentIdEqualTo(domainOrg.getOrgId());

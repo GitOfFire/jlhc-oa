@@ -115,7 +115,7 @@ public class SellNoteController extends BaseController {
      */
     @DeleteMapping("deleteNote/{noteId}")
     @RequiresPermissions("note:deleteNote")
-    public Msg deleteNote(String noteId){
+    public Msg deleteNote(@PathVariable @NotNull @Size(min = 32,max = 32,message = "代理主键为32位全球唯一码") String noteId){
         try{
             Integer resultNum = noteService.dropNote(noteId);
             if( 0 >= resultNum){

@@ -47,4 +47,6 @@ public interface UserService {
     List<User> queryUsersByTaskIdInTaskUserRelation(String taskId);
 
     List<User> getUsersOfOrg(Integer orgId) throws NullEntityInDatabaseException;
+
+    Integer reworkUserPasswdToDef(Integer userId) throws NullEntityInDatabaseException, UnsupportedEncodingException, NoSuchAlgorithmException;
 }

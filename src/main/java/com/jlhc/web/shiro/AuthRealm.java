@@ -64,7 +64,7 @@ public class AuthRealm extends AuthorizingRealm {
 
 
     /**
-     * 此方法的主要作用时查询数据库，根据用户输入的用户名信息，找到对应的所有的用户信息，其中应该是涉及到关于信息输入格式校验的问题
+     * 此方法的主要作用时查询数据库，根据用户输入的用户名信息，找到对应的所有的用户信息，其中涉及到关于信息输入格式校验的问题
      *
      * @param authenticationToken
      * @return 登陆信息
@@ -82,6 +82,18 @@ public class AuthRealm extends AuthorizingRealm {
         if ("admin".equals(username)){
             //如果是管理员,赋予所有的权限
             user = userService.getAllRolesAndRights();
+            if (null == user){
+                throw new UnknownAccountException();
+            }
+
+            //状态不对,登录验证通不过
+            if (0 == user.getUserState()){
+                throw new NotVertifyException();
+            }
+
+            if (2 == user.getUserState()){
+                throw new FailVertifyException();
+            }
             /*System.out.println("---查看得到的信息对不对---");
             System.out.println("superManager:"+user);*/
 
@@ -90,22 +102,23 @@ public class AuthRealm extends AuthorizingRealm {
         else{
             //user =  userService.queryUserWithRolesAndRightByName(username);
             user = userService.queryUserByUsername(username);
-            List<String> rightDatas = rightService.queryRightDatasByUserId(user.getUserId());
+            //账户不存在,或者该账号异常--有超过两个以上不同的用户名
+            if (null == user){
+                throw new UnknownAccountException();
+            }
+
+            //状态不对,登录验证通不过
+            if (0 == user.getUserState()){
+                throw new NotVertifyException();
+            }
+
+            if (2 == user.getUserState()){
+                throw new FailVertifyException();
+            }
+            List<String> rightDatas = rightService.queryRightDatasByUserId(user.getUserId());//移动到验证后
             List newList = new ArrayList(new HashSet(rightDatas));
             user.setPromissions(newList);
-        }
-        //账户不存在,或者该账号异常--有超过两个以上不同的用户名
-        if (null == user){
-            throw new UnknownAccountException();
-        }
 
-        //状态不对,登录验证通不过
-        if (0 == user.getUserState()){
-            throw new NotVertifyException();
-        }
-
-        if (2 == user.getUserState()){
-            throw new FailVertifyException();
         }
 
         //Info的第二个参数是查询数据库得到的密码

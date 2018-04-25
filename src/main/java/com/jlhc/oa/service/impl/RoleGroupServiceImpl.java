@@ -37,7 +37,7 @@ public class RoleGroupServiceImpl extends BaseServiceImpl implements RoleGroupSe
     @Autowired
     RoleMapper roleMapper;
 
-    public static RoleGroupExample roleGroupExample = new RoleGroupExample();
+    //public static RoleGroupExample roleGroupExample = new RoleGroupExample();
 
 
 
@@ -57,6 +57,7 @@ public class RoleGroupServiceImpl extends BaseServiceImpl implements RoleGroupSe
         RoleGroupExample roleGroupExampleWithRole = new RoleGroupExample();
 
         //一个参数,名称
+        roleGroupExampleWithRole.clear();
         roleGroupExampleWithRole.createCriteria()
             .andGroupNameEqualTo(roleGroupName)
             .andOrgIdEqualTo(orgId)
@@ -79,7 +80,7 @@ public class RoleGroupServiceImpl extends BaseServiceImpl implements RoleGroupSe
         //根据roleGroup建立example
 
         RoleGroupExample roleGroupExampleWithRole = new RoleGroupExample();
-
+        roleGroupExampleWithRole.clear();
         //一个参数,名称
         roleGroupExampleWithRole.createCriteria()
                 .andGroupNameEqualTo(roleGroupName)
@@ -142,6 +143,7 @@ public class RoleGroupServiceImpl extends BaseServiceImpl implements RoleGroupSe
 //            List<RoleGroup> roleGroupsAtOnlyOneOrg = roleGroupMapper.selectByExample(roleGroupExample);
 //            roleGroups.addAll(roleGroupsAtOnlyOneOrg);
 //        }
+        RoleGroupExample roleGroupExample = new RoleGroupExample();
         roleGroupExample.clear();
         roleGroupExample.createCriteria().andOrgIdEqualTo(loginUser.getOrgId());
         List<RoleGroup> roleGroups = roleGroupMapper.selectByExample(roleGroupExample);
@@ -220,6 +222,7 @@ public class RoleGroupServiceImpl extends BaseServiceImpl implements RoleGroupSe
             //一个组织只有一个默认组
             //查询默认组
             RoleGroupExample roleGroupExample = new RoleGroupExample();
+            roleGroupExample.clear();
             roleGroupExample.createCriteria().andGroupDefStateEqualTo(1).andOrgIdEqualTo(roleGroup.getOrgId());//这里得到的默认组是一个
             List<RoleGroup> defRoleGroups = roleGroupMapper.selectByExample(roleGroupExample);
             RoleGroup defRoleGroup;
@@ -230,6 +233,7 @@ public class RoleGroupServiceImpl extends BaseServiceImpl implements RoleGroupSe
                 for (Role role : roles) {
                     role.setRoleGroupId(defRoleGroup.getGroupId());
                     RoleExample roleExample = new RoleExample();
+                    roleExample.clear();
                     roleExample.createCriteria().andRoleGroupIdEqualTo(defRoleGroup.getOrgId());
                     resultNum += roleMapper.updateByExampleSelective(role,roleExample);
                 }

@@ -6,6 +6,7 @@ import com.jlhc.oa.dto.function.FuncRoleRelation;
 import com.jlhc.oa.dto.function.Function;
 import com.jlhc.oa.dto.function.Right;
 import com.jlhc.oa.dto.function.example.FuncRightRelationExample;
+import com.jlhc.oa.dto.function.example.FuncRoleRelationExample;
 import com.jlhc.oa.dto.function.example.FunctionExample;
 import com.jlhc.oa.dto.function.example.RightExample;
 import com.jlhc.oa.dto.right.RightAndFuncId;
@@ -49,12 +50,6 @@ public class RightServieImpl extends BaseServiceImpl implements RightService{
 
     @Autowired
     FunctionMapper functionMapper;
-
-    private RightExample rightExample = new RightExample();
-
-    private FunctionExample functionExample = new FunctionExample();
-
-    private FuncRightRelationExample funcRightRelationExample = new FuncRightRelationExample();
     /**
      * 查询权限的整体集合
      *
@@ -127,6 +122,7 @@ public class RightServieImpl extends BaseServiceImpl implements RightService{
         //首先插入一条权限数据
         resultNum += this.createSelectiveNotExistRightData(right);
         //查一下插入right的数据ID是多少
+        RightExample rightExample = new RightExample();
         rightExample.createCriteria()
                 .andRightDataEqualTo(right.getRightData());
         List<Right> rightsInserted = rightMapper.selectByExample(rightExample);
@@ -152,6 +148,7 @@ public class RightServieImpl extends BaseServiceImpl implements RightService{
         if (null == rightName){
             return null;
         }
+        RightExample rightExample = new RightExample();
         rightExample.clear();
         rightExample.createCriteria()
                 .andRightNameLike(rightName);
@@ -170,6 +167,7 @@ public class RightServieImpl extends BaseServiceImpl implements RightService{
         if (null == slurData){
             return null;
         }
+        RightExample rightExample = new RightExample();
         rightExample.clear();
         rightExample.createCriteria()
                 .andRightDataLike(slurData);
@@ -208,6 +206,7 @@ public class RightServieImpl extends BaseServiceImpl implements RightService{
             return resultNum;
         }
         //删除关系
+        FuncRightRelationExample funcRightRelationExample = new FuncRightRelationExample();
         funcRightRelationExample.clear();
         funcRightRelationExample.createCriteria()
                 .andRightIdEqualTo(rightId);
@@ -243,6 +242,7 @@ public class RightServieImpl extends BaseServiceImpl implements RightService{
             //right数据不存在
             return -3;
         }
+        RightExample rightExample = new RightExample();
         rightExample.clear();
         rightExample.createCriteria()
                 .andRightDataEqualTo(right.getRightData());
@@ -258,6 +258,7 @@ public class RightServieImpl extends BaseServiceImpl implements RightService{
             return -3;
         }
         //审查一下组合后的的插入数据是否存在
+        FuncRightRelationExample funcRightRelationExample = new FuncRightRelationExample();
         funcRightRelationExample.clear();
         funcRightRelationExample.createCriteria()
                 .andFuncIdEqualTo(funcId)

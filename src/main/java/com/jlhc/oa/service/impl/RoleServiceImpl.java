@@ -54,9 +54,9 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
     @Autowired
     UserService userService;
 
-    private RoleUserRelationExample roleUserRelationExample = new RoleUserRelationExample();
+ //   private RoleUserRelationExample roleUserRelationExample = new RoleUserRelationExample();
 
-    private RoleExample roleExample = new RoleExample();
+ //   private RoleExample roleExample = new RoleExample();
 
 
 
@@ -130,6 +130,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
             return null;
         }
         RoleUserRelationExample roleUserRelationExample = new RoleUserRelationExample();
+        roleUserRelationExample.clear();
         roleUserRelationExample.createCriteria()
                 .andUserIdEqualTo(userId);
         List<RoleUserRelation> roleUserRelations = roleUserRelationMapper.selectByExample(roleUserRelationExample);
@@ -154,6 +155,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
             return null;
         }
         RoleExample roleExample = new RoleExample();
+        roleExample.clear();
         roleExample.createCriteria()
                 .andRoleGroupIdEqualTo(roleGroupId);
         List<Role> roles = roleMapper.selectByExample(roleExample);
@@ -185,6 +187,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
         }
         //根据用户查询原有的用户角色关系数据
         RoleUserRelationExample roleUserRelationExample = new RoleUserRelationExample();
+        roleUserRelationExample.clear();
         roleUserRelationExample.createCriteria().
                 andUserIdEqualTo(userId);
         List<RoleUserRelation> roleUserRelations = roleUserRelationMapper.selectByExample(roleUserRelationExample);
@@ -247,7 +250,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
                    hasUser = true;
                }
             }
-            if (false == hasUser){
+            if (!hasUser){
                 //添加操作
                 RoleUserRelation roleUserRelation = new RoleUserRelation();
                 roleUserRelation.setUserId(userId);
@@ -272,6 +275,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
         Integer roleId = roleIdAndUserIds.getRoleId();
         List<Integer> userIds = roleIdAndUserIds.getUserIds();
         //条件
+        RoleUserRelationExample roleUserRelationExample = new RoleUserRelationExample();
         roleUserRelationExample.clear();
         RoleUserRelationExample.Criteria criteria = roleUserRelationExample.createCriteria();
 
@@ -307,6 +311,8 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
         Integer userId = userIdAndRoleIds.getUserId();
         List<Integer> roleIds = userIdAndRoleIds.getRoleIds();
         //条件
+        RoleUserRelationExample roleUserRelationExample = new RoleUserRelationExample();
+
         roleUserRelationExample.clear();
         RoleUserRelationExample.Criteria criteria = roleUserRelationExample.createCriteria();
 
@@ -349,6 +355,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
         }
         //判断是否还有角色用户的关系
         List<User> users = userService.queryUsersByRoleId(roleId);
+        RoleUserRelationExample roleUserRelationExample = new RoleUserRelationExample();
         if (0 < users.size()){
             //有用户角色关系直接删除
             roleUserRelationExample.clear();
@@ -409,6 +416,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService{
      */
     private boolean isReasonedRole(Role role){
         RoleExample roleExample = new RoleExample();
+        roleExample.clear();
         roleExample.createCriteria()
             .andRoleNameEqualTo(role.getRoleName())
             .andRoleGroupIdEqualTo(role.getRoleGroupId());

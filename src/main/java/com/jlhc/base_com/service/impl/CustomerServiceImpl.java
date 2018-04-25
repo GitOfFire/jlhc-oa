@@ -33,9 +33,9 @@ public class CustomerServiceImpl extends BaseServiceImpl implements CustomerServ
     @Autowired
     CompanySolrService companySolrService;
 
-    private static CustomerExample customerExample = new CustomerExample();
-
-    private static CompanyExample companyExample = new CompanyExample();
+//    private static CustomerExample customerExample = new CustomerExample();
+//
+//    private static CompanyExample companyExample = new CompanyExample();
     /**
      * 对相同的人进行过滤,然后创建客户
      *
@@ -87,6 +87,7 @@ public class CustomerServiceImpl extends BaseServiceImpl implements CustomerServ
 //        if (null == cusIdCard || "".equalsIgnoreCase(cusIdCard)){
 //            return null;
 //        }
+        CustomerExample customerExample = new CustomerExample();
         customerExample.clear();
         customerExample.createCriteria()
             .andCusIdCardEqualTo(cusIdCard);
@@ -121,6 +122,7 @@ public class CustomerServiceImpl extends BaseServiceImpl implements CustomerServ
         }
         //验证身份证号是不是改重了,如果修改的身份证号是null或者""的时候,就不用对身份证校验了
         if (!"".equalsIgnoreCase(customer.getCusIdCard())&&(null != customer.getCusIdCard())){
+            CustomerExample customerExample = new CustomerExample();
             customerExample.clear();
             customerExample.createCriteria()
                     .andCusIdCardEqualTo(customer.getCusIdCard());
@@ -181,6 +183,7 @@ public class CustomerServiceImpl extends BaseServiceImpl implements CustomerServ
         if (null == comId||"".equalsIgnoreCase(comId)){
             return null;
         }
+        CustomerExample customerExample = new CustomerExample();
         customerExample.clear();
         customerExample.createCriteria()
                 .andComIdEqualTo(comId);
@@ -219,6 +222,7 @@ public class CustomerServiceImpl extends BaseServiceImpl implements CustomerServ
      */
     @Override
     public List<Customer> queryCustomersByName(String cusName) {
+        CustomerExample customerExample = new CustomerExample();
         if(null == cusName||"".equalsIgnoreCase(cusName)){
             customerExample.clear();
             customerExample.createCriteria()

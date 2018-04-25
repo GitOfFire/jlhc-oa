@@ -38,13 +38,13 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
     @Autowired
     FuncRoleRelationMapper funcRoleRelationMapper;
 
-    private ModuleExample moduleExample = new ModuleExample();
-
-    private FunctionExample functionExample = new FunctionExample();
-
-    private RoleExample roleExample = new RoleExample();
-
-    private FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
+//    private ModuleExample moduleExample = new ModuleExample();
+//
+//    private FunctionExample functionExample = new FunctionExample();
+//
+//    private RoleExample roleExample = new RoleExample();
+//
+//    private FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
     @Override
     public Map<String,HashSet<Function>> queryFunctionByRoleId(Integer roleId) throws NullEntityInDatabaseException {
         //数据校验
@@ -59,6 +59,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         //开始查询功能
         //查询角色所有的function
         //List<Function> functionsOfRole = functionMapper.selectByRoleId(roleId);
+        FunctionExample functionExample = new FunctionExample();
         functionExample.clear();
         //所有的func集合
         List<Function> allFunctions = functionMapper.selectByExample(functionExample);
@@ -134,6 +135,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
 
         Boolean isEquals = false;
         //校验func存在性
+        FunctionExample functionExample = new FunctionExample();
         functionExample.clear();
         List<Function> allFunctions = functionMapper.selectByExample(functionExample);
         List<Integer> allFunctionIds = this.getFuncIds(allFunctions);
@@ -150,7 +152,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         //System.out.println("模块ID呀!!!!!:"+moduleIds.get(0));
         //插入数据库,给roleFunctionRelation建立关系就可以
         //查询某一模块的所有功能ID
-        FunctionExample functionExample = new FunctionExample();
+        functionExample.clear();
         functionExample.createCriteria()
                 .andModuleIdEqualTo(moduleIds.get(0));
         //传来module的所有func
@@ -190,6 +192,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         if (!(null == needDelRelationFuncIds || 0 == needDelRelationFuncIds.size())){
             FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
             //批量删除关系
+            funcRoleRelationExample.clear();
             funcRoleRelationExample.createCriteria()
                     .andRoleIdEqualTo(roleId)
                     .andFuncIdIn(needDelRelationFuncIds);
@@ -221,6 +224,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         Integer resultNum = 0;
         //首先进行数据存在性校验
         Integer roleId = roleIdAndModuleId.getRoleId();
+        RoleExample roleExample = new RoleExample();
         roleExample.clear();
         roleExample.createCriteria()
                 .andRoleIdEqualTo(roleId);
@@ -231,6 +235,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
             return -2;
         }
         Integer moduleId = roleIdAndModuleId.getModuleId();
+        ModuleExample moduleExample = new ModuleExample();
         moduleExample.clear();
         moduleExample.createCriteria()
                 .andModuleIdEqualTo(moduleId);
@@ -241,12 +246,14 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
             return -2;
         }
         //根据module查询function
+        FunctionExample functionExample = new FunctionExample();
         functionExample.clear();
         functionExample.createCriteria()
                 .andModuleIdEqualTo(moduleId);
         List<Function> needDelFunctionsOfModule = functionMapper.selectByExample(functionExample);
         List<Integer> needDelFunctionIdsOfModule = this.getFuncIds(needDelFunctionsOfModule);
         //查到所有要删除的relation
+        FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
         funcRoleRelationExample.clear();
         funcRoleRelationExample.createCriteria()
                 .andRoleIdEqualTo(roleId)
@@ -292,6 +299,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         if (null == sulrName||"".equals(sulrName)){
             return null;
         }
+        FunctionExample functionExample = new FunctionExample();
         functionExample.clear();
         functionExample.createCriteria()
                 .andFuncNameLike(sulrName);
@@ -310,6 +318,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         if (null == roleId){
             return null;
         }
+        FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
         funcRoleRelationExample.clear();
         funcRoleRelationExample.createCriteria()
                 .andRoleIdEqualTo(roleId);
@@ -328,6 +337,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         if (null == roleId){
             return 0;
         }
+        FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
         funcRoleRelationExample.clear();
         funcRoleRelationExample.createCriteria()
                 .andRoleIdEqualTo(roleId);
@@ -355,6 +365,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
             if (null == function){
                 return -3;
             }
+            FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
             funcRoleRelationExample.clear();
             funcRoleRelationExample.createCriteria()
                     .andRoleIdEqualTo(roleId)
@@ -394,6 +405,7 @@ public class FunctionServiceImpl extends BaseServiceImpl implements FunctionServ
         //删除直接执行
         for (Integer funcId:dropedFuncIds ) {
             //查询出所有存在的关系,都删除
+            FuncRoleRelationExample funcRoleRelationExample = new FuncRoleRelationExample();
             funcRoleRelationExample.clear();
             funcRoleRelationExample.createCriteria()
                     .andFuncIdEqualTo(funcId)

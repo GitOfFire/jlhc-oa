@@ -49,11 +49,11 @@ public class TaskServiceImpl implements TaskService {
     TaskUserRelationMapper taskUserRelationMapper;
     @Autowired
     UserService userService;
-    public static TaskUserRelationExample taskUserRelationExample = new TaskUserRelationExample();
-
-    public static FlowExample flowExample = new FlowExample();
-
-    public static TaskExample taskExample = new TaskExample();
+//    public static TaskUserRelationExample taskUserRelationExample = new TaskUserRelationExample();
+//
+//    public static FlowExample flowExample = new FlowExample();
+//
+//    public static TaskExample taskExample = new TaskExample();
 
 
     /**
@@ -202,6 +202,7 @@ public class TaskServiceImpl implements TaskService {
         }
         //获取其中的comIds
         List<Task> tasks = new ArrayList<>();
+        TaskExample taskExample = new TaskExample();
         for (CompanySolr companySolr :companySolrs ) {
             taskExample.clear();
             taskExample.createCriteria()
@@ -228,6 +229,7 @@ public class TaskServiceImpl implements TaskService {
         //获取其中的comIds
         List<Task> tasks = new ArrayList<>();
         //根据comId查task
+        TaskExample taskExample = new TaskExample();
         for (CompanySolr companySolr :companySolrs ) {
             taskExample.clear();
             taskExample.createCriteria()
@@ -249,6 +251,7 @@ public class TaskServiceImpl implements TaskService {
         if (null == createUserId){
             return null;
         }
+        TaskExample taskExample = new TaskExample();
         taskExample.clear();
         taskExample.createCriteria()
                 .andTaskCreatedUserEqualTo(createUserId);
@@ -267,6 +270,7 @@ public class TaskServiceImpl implements TaskService {
         if(null == holdUserId){
             return null;
         }
+        TaskExample taskExample = new TaskExample();
         taskExample.clear();
         taskExample.createCriteria()
                 .andHoldUserIdEqualTo(holdUserId);
@@ -337,6 +341,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> queryTasksByFlowUserId(Integer flowUserId) {
+        FlowExample flowExample = new FlowExample();
         flowExample.clear();
         flowExample.createCriteria()
                 .andFlowUserIdEqualTo(flowUserId);
@@ -447,6 +452,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Integer dropTaskUserRelation(String taskId,Integer userId,Integer operUserId) throws NullEntityInDatabaseException {
+        TaskUserRelationExample taskUserRelationExample = new TaskUserRelationExample();
         taskUserRelationExample.clear();
         taskUserRelationExample.createCriteria()
                 .andTaskIdEqualTo(taskId)
@@ -502,6 +508,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> queryTasksInTaskSea() {
+        TaskExample taskExample = new TaskExample();
         taskExample.clear();
         taskExample.createCriteria()
                 .andTaskStateEqualTo(0)
@@ -517,6 +524,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> queryTasksInTrash() {
+        TaskExample taskExample = new TaskExample();
         taskExample.clear();
         taskExample.createCriteria()
                 .andTaskStateEqualTo(2);//已经放弃
@@ -532,6 +540,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> queryTasksByComId(String comId){
+        TaskExample taskExample = new TaskExample();
         taskExample.clear();
         taskExample.createCriteria()
                 .andComIdEqualTo(comId);
@@ -551,6 +560,7 @@ public class TaskServiceImpl implements TaskService {
         List<User> users = userService.queryAllUsersByOrgId(orgId);
         //查询每一个员工所属的任务
         List<Task> tasks = new ArrayList<>();
+        TaskExample taskExample = new TaskExample();
         for (User user : users) {
             taskExample.clear();
             taskExample.createCriteria()

@@ -36,20 +36,18 @@ public class LoginController extends BaseController{
         //目前还没做rememberMe
         String username = user.getUsername();
         String password = String.valueOf(user.getPassword());
-        //MD5加密
-        try {
-            password = MD5Utils.EncoderByMd5(password);
-            //logger.info(password);
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e.getMessage());
-            return ResultUtil.error(e);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-            return ResultUtil.error(e);
-        }
-        //logger.info("登录密码为:"+password);
+        //MD5加密,现在由前端来做
+//        try {
+//            password = MD5Utils.EncoderByMd5(password);
+//            //logger.info(password);
+//        } catch (NoSuchAlgorithmException e) {
+//            logger.error(e.getMessage());
+//            return ResultUtil.error(e);
+//        } catch (UnsupportedEncodingException e) {
+//            logger.error(e.getMessage());
+//            return ResultUtil.error(e);
+//        }
         UsernamePasswordToken usernamePasswordToken=new UsernamePasswordToken(username,password);
-
         Subject subject = SecurityUtils.getSubject();
         try {
             logger.info("-------start登录动作-------");
